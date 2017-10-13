@@ -1,0 +1,4 @@
+bitso:
+    url: wss://ws.bitso.com
+    port: 44
+    server: ws.bitso.com
