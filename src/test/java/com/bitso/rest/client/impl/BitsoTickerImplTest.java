@@ -31,7 +31,7 @@ public class BitsoTickerImplTest {
     /**
      * Test of getTrades method, of class BitsoTickerImpl.
      */
-    @Test
+//    @Test
     public void testGetTrades() {
         BitsoTicker bitsoTicker = mock(BitsoTickerImpl.class);
         System.out.println("getTrades");

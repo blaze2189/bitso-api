@@ -6,9 +6,13 @@
 package com.bitso.api.websocket.impl;
 
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.entity.BitsoResponse;
+import com.bitso.rest.client.BitsoTicker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
+import java.util.Vector;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,11 +22,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObserver {
 
+    @Autowired
+    protected BitsoTicker bitsoTicker;
+    
      private List<String> messageReceived;
+     private List<BitsoResponse> listBitsoResponse;
      private Boolean isConnected;
     
     {
         messageReceived=new ArrayList<>();
+        listBitsoResponse = new Vector<>();
         isConnected=false;
     }
     
@@ -31,6 +40,11 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
         return messageReceived;
     }
 
+    @Override
+    public List<BitsoResponse> getListBitsoRespone(){
+        return listBitsoResponse;
+    }
+    
     @Override
     public Boolean isConnected() {
         return isConnected;
@@ -41,6 +55,13 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
        if(arg instanceof String){
             String message = (String)arg;
             messageReceived.add(message);
+            BitsoResponse bitsoResponse=bitsoTicker.getTrades();
+            if(listBitsoResponse.size()<6){
+                listBitsoResponse.add(bitsoResponse);
+            }else{
+                listBitsoResponse.remove(0);
+                listBitsoResponse.add(bitsoResponse);
+            }
         }
         if(arg instanceof Boolean){
             isConnected=(Boolean)arg;

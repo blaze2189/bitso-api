@@ -30,16 +30,12 @@ import org.springframework.stereotype.Component;
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Autowired
-    private WebSocketConnection webSocketOrderImpl;
+    private WebSocketConnection webSocektConnection;
     
     @Autowired
     @Qualifier("websocketClientHandshaker")
     private WebSocketClientHandshaker webSocketClientHandshaker;
     private ChannelPromise channelPromise;
-    
-    @Autowired
-    @Qualifier("setBitsoWebSocket")
-    private Set setBitsoWebSocket;
     
     public ChannelFuture getChannelPromise() {
         return channelPromise;
@@ -89,13 +85,11 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     }
     
     private void setMessageReceived(String message){
-        ((WebSocketConnectionImpl)webSocketOrderImpl).setMessageReceived(message);
+        ((WebSocketConnectionImpl)webSocektConnection).setMessageReceived(message);
     }
     
     private void setConnected(Boolean isConnected){
-        for(Object o : setBitsoWebSocket){
-            ((WebSocketConnectionImpl)webSocketOrderImpl).setConnected(isConnected);
-        }
+        ((WebSocketConnectionImpl)webSocektConnection).setConnected(isConnected);
     }
 
     @Override

@@ -36,27 +36,16 @@ public class BitsoTickerImpl implements BitsoTicker {
     public BitsoResponse getTrades() {
         BitsoResponse returnResponse = null;
         HttpHeaders tokenHeader = new HttpHeaders();
-//        tokenHeader.add("Content-type",MediaType.APPLICATION_JSON_VALUE);
-//        tokenHeader.add("Content-type", "application/json");
         tokenHeader.add("User-Agent", "curl/7.51.0");
         tokenHeader.add("Accept", "application/json");
         HttpEntity request = new HttpEntity(tokenHeader);
         ResponseEntity<BitsoResponse> response;
-        ResponseEntity<Map> responseMap;
         try {
-//            List<HttpMessageConverter<?>> list = restTemplate.getMessageConverters();
-//            for(HttpMessageConverter h : list){
-//                System.out.println("h: "+h);
-//            }
             response = restTemplate.exchange(BITSO_TICKER, HttpMethod.GET, request, BitsoResponse.class);
-//            responseMap = restTemplate.exchange(BITSO_TICKER, HttpMethod.GET, request, Map.class);
-//            for(Object k:responseMap.getBody().keySet()){
-//                System.out.println(k+":"+responseMap.getBody().get(k));
-//            }
             returnResponse = response.getBody();
         } catch (HttpStatusCodeException e) {
             HttpStatus status = e.getStatusCode();
-            System.out.println("Error " + status + ": " + e.getMessage());
+            e.printStackTrace();
         } 
         return returnResponse;
     }
