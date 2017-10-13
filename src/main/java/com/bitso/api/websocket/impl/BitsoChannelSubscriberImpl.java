@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class BitsoChannelSubscriberImpl implements BitsoChannelSubscriber {
     
     @Autowired
-    WebSocketConnection webSocketOrder;
+    protected WebSocketConnection webSocketOrder;
     
     protected String channelName;
     
