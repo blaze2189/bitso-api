@@ -16,7 +16,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class Payload {
+public class RestPayload {
 
     @JsonProperty("high")
     private String high;

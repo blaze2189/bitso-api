@@ -11,8 +11,8 @@ import com.bitso.rest.client.BitsoTicker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-import java.util.Vector;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -26,12 +26,14 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
     protected BitsoTicker bitsoTicker;
     
      private List<String> messageReceived;
+     @Autowired
+     @Qualifier("tradesList")
      private List<BitsoResponse> listBitsoResponse;
      private Boolean isConnected;
     
     {
         messageReceived=new ArrayList<>();
-        listBitsoResponse = new Vector<>();
+        //listBitsoResponse = new Vector<>();
         isConnected=false;
     }
     
@@ -67,8 +69,5 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
             isConnected=(Boolean)arg;
         }
     }
-    
-    
-    
     
 }
