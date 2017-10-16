@@ -20,6 +20,6 @@ public class BitsoResponse {
     @JsonProperty("success")
     private Boolean success;
     @JsonProperty("payload")
-    private Payload payload;
+    private RestPayload payload;
     
 }

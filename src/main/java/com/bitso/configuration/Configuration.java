@@ -5,6 +5,7 @@
  */
 package com.bitso.configuration;
 
+import com.bitso.entity.BitsoResponse;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,7 +18,10 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -78,6 +82,13 @@ public class Configuration {
     @Bean(name="setBitsoWebSocket")
     public Set setBitsoWebSocket(){
         return setBistoWebSocket;
+    }
+    
+    //List<BitsoResponse> listBitsoResponse= Collections.synchronizedList(new ArrayList<BitsoResponse>());
+    
+    @Bean(name="tradesList")
+    public List<BitsoResponse> listBitsoRespone(){
+        return Collections.synchronizedList(new ArrayList<BitsoResponse>());
     }
 
 }
