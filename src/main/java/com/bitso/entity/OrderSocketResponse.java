@@ -20,8 +20,6 @@ public class OrderSocketResponse {
     
     @JsonProperty("type")
     private String type;
-//    @JsonProperty("property")
-//    private String property;
     @JsonProperty("book")
     private String book;
     @JsonProperty("payload")

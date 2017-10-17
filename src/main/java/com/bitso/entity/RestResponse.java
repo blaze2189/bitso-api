@@ -15,7 +15,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class BitsoResponse {
+public class RestResponse {
  
     @JsonProperty("success")
     private Boolean success;

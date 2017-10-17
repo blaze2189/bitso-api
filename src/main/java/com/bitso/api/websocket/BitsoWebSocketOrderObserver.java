@@ -5,7 +5,7 @@
  */
 package com.bitso.api.websocket;
 
-import com.bitso.entity.BitsoResponse;
+import com.bitso.entity.RestResponse;
 import java.util.List;
 import java.util.Observer;
 
@@ -16,7 +16,7 @@ import java.util.Observer;
 public interface BitsoWebSocketOrderObserver extends Observer {
     
     List<String> getMessageReceived();
-    List<BitsoResponse> getListBitsoRespone();
+    List<RestResponse> getListBitsoRespone();
     Boolean isConnected();
     
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  *
  * @author Jorge
  */
-@Component
+@Component("bitsoOrdersChannel")
 public class BitsoOrdersChannel extends BitsoChannelSubscriberImpl {
 
     @Value("${bitso.channel.orders}")

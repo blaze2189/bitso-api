@@ -5,7 +5,7 @@
  */
 package com.bitso.rest.client;
 
-import com.bitso.entity.BitsoResponse;
+import com.bitso.entity.RestResponse;
 
 /**
  *
@@ -14,6 +14,6 @@ import com.bitso.entity.BitsoResponse;
 
 public interface BitsoTicker {
 
-    BitsoResponse getTrades();
+    RestResponse getTrades();
     
 }

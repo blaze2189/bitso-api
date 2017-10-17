@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.bitso.api.util.PayloadSocketComparator;
-import com.bitso.entity.BitsoResponse;
+import com.bitso.entity.RestResponse;
 import com.bitso.entity.WebSocketPayload;
 
 import io.netty.bootstrap.Bootstrap;
@@ -42,8 +42,7 @@ public class Configuration {
  
 	RestTemplate restTemplate = new RestTemplate();
 	
-	@Autowired
-	private PayloadSocketComparator payloadSocketComparator;
+	
     
     @Bean
     public RestTemplate restTemplate(){
@@ -73,9 +72,6 @@ public class Configuration {
         return new NioEventLoopGroup();
     }
 
-//    public SslContext getSslContext(){
-//        return SslContextBuilder.forClient(). trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-//    }
     @Bean
     public HttpClientCodec httpClientCodec() {
         return new HttpClientCodec();
@@ -84,29 +80,6 @@ public class Configuration {
     @Bean
     public HttpObjectAggregator httpClientObjectAggregator() {
         return new HttpObjectAggregator(8192);
-    }
-    
-//    @Bean(name="setBitsoWebSocket")
-//    public Set setBitsoWebSocket(){
-//        return Collections.synchronizedSortedSet(new SortedSet() {
-//		});
-//    }
-    
-    //List<BitsoResponse> listBitsoResponse= Collections.synchronizedList(new ArrayList<BitsoResponse>());
-    
-    @Bean(name="tradesList")
-    public List<BitsoResponse> listBitsoRespone(){
-        return Collections.synchronizedList(new ArrayList<BitsoResponse>());
-    }
-    
-    @Bean(name="topAsks")
-    public Set<WebSocketPayload> listTopAsk(){
-    	return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
-    }
-    
-    @Bean(name="topBids")
-    public Set<WebSocketPayload> listTopBid(){
-    	return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
     }
 
 }

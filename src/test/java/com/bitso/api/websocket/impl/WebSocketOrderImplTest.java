@@ -17,14 +17,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
 
+import com.bitso.api.main.test.ConfigurationTest;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
 import com.bitso.api.websocket.WebSocketConnection;
-import com.bitso.entity.BitsoResponse;
 import com.bitso.entity.RestPayload;
+import com.bitso.entity.RestResponse;
+import com.bitso.entity.RestTickerPayload;
 import com.bitso.entity.WebSocketPayload;
 import com.bitso.rest.client.BitsoTicker;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,19 +33,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  * @author Jorge
  */
-@ComponentScan({"com.bitso.api.websocket.impl",
-    "com.bitso.configuration",
-    "com.bitso.api.util",
-    "com.bitso.rest.client.impl"
-})
-@PropertySource("classpath:application.properties")
 public class WebSocketOrderImplTest {
     
     ApplicationContext applicationContext;
     
     BitsoTicker bitsoTicker = mock(BitsoTicker.class);
 
-    private List<BitsoResponse> listBitsoResponse;
+    private List<RestResponse> listBitsoResponse;
     
     private Set<WebSocketPayload> listTopAsksTrades;
     
@@ -54,17 +48,17 @@ public class WebSocketOrderImplTest {
     @Before
     public void setUp() {
         applicationContext = new AnnotationConfigApplicationContext();
-        ((AnnotationConfigApplicationContext) applicationContext).register(WebSocketOrderImplTest.class);
+        ((AnnotationConfigApplicationContext) applicationContext).register(ConfigurationTest.class);
         ((AnnotationConfigApplicationContext) applicationContext).refresh();
         listBitsoResponse = applicationContext.getBean("tradesList", List.class);
         listTopAsksTrades = applicationContext.getBean("topAsks",Set.class);
         listTopBidsTrades = applicationContext.getBean("topBids",Set.class);
     }
     
-    private BitsoResponse createBitsoResponse() {
-        BitsoResponse bitsoResponse = new BitsoResponse();
+    private RestResponse createBitsoResponse() {
+        RestResponse bitsoResponse = new RestResponse();
         bitsoResponse.setSuccess(true);
-        RestPayload payload = new RestPayload();
+        RestTickerPayload payload = new RestTickerPayload();
         payload.setAsk(String.valueOf(Math.random()));
         payload.setBid(String.valueOf(Math.random()));
         payload.setBook("btc_mxn");

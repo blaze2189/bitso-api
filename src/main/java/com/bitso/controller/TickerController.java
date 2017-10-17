@@ -5,7 +5,7 @@
  */
 package com.bitso.controller;
 
-import com.bitso.entity.BitsoResponse;
+import com.bitso.entity.RestResponse;
 import com.bitso.rest.client.BitsoTicker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +20,7 @@ public class TickerController {
     @Autowired
     private BitsoTicker bitsoTicker;
 
-    public BitsoResponse getBistoResponse() {
+    public RestResponse getBistoResponse() {
 
         return bitsoTicker.getTrades();
 

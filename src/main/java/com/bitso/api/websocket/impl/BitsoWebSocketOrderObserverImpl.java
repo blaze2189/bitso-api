@@ -17,8 +17,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
-import com.bitso.entity.BitsoResponse;
+import com.bitso.entity.DiffOrdersWocketResponse;
 import com.bitso.entity.OrderSocketResponse;
+import com.bitso.entity.RestOrderBookPayload;
+import com.bitso.entity.RestPayload;
+import com.bitso.entity.RestResponse;
+import com.bitso.entity.TradeInformation;
 import com.bitso.entity.WebSocketPayload;
 import com.bitso.rest.client.BitsoTicker;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +40,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	private List<String> messageReceived;
 	@Autowired
 	@Qualifier("tradesList")
-	private List<BitsoResponse> listBitsoResponse;
+	private List<RestResponse> listBitsoResponse;
 	private Boolean isConnected;
 
 	@Autowired
@@ -47,9 +51,16 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	@Qualifier("topAsks")
 	private Set<WebSocketPayload> setAsks;
 
+	@Autowired
+	@Qualifier("recentBids")
+	private List<DiffOrdersWocketResponse> recentBids;
+
+	@Autowired
+	@Qualifier("recentAsks")
+	private List<DiffOrdersWocketResponse> recentAsks;
+
 	{
 		messageReceived = new ArrayList<>();
-		// listBitsoResponse = new Vector<>();
 		isConnected = false;
 	}
 
@@ -59,7 +70,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	}
 
 	@Override
-	public List<BitsoResponse> getListBitsoRespone() {
+	public List<RestResponse> getListBitsoRespone() {
 		return listBitsoResponse;
 	}
 
@@ -67,6 +78,14 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	public Boolean isConnected() {
 		return isConnected;
 	}
+
+	@Autowired
+	@Qualifier("orderBook")
+	public RestResponse orderBook;
+
+	@Autowired
+	@Qualifier("lastSequenceTrade")
+	public Integer lastSequenceTrade;
 
 	@Override
 	public void update(Observable o, Object arg) {
@@ -76,20 +95,18 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
 				Map<String, Object> messageMap = objectMapper.readValue(message, Map.class);
-				if (messageMap.containsKey("action")) {
-
-				} else if (messageMap.containsKey("type")) {
+				if (messageMap.containsKey("type") && !message.contains("action")) {
 					String type = (String) messageMap.get("type");
 					switch (type) {
 					case "ka":
 						break;
 					case "orders":
 						OrderSocketResponse orderSocketResponse = objectMapper.readValue(message,
-						OrderSocketResponse.class);
+								OrderSocketResponse.class);
 						setBids = orderSocketResponse.getOrderPayloadSocketResponse().getBids();
 						setAsks = orderSocketResponse.getOrderPayloadSocketResponse().getAsks();
 						messageReceived.add(message);
-						BitsoResponse bitsoResponse = bitsoTicker.getTrades();
+						RestResponse bitsoResponse = bitsoTicker.getTrades();
 						if (listBitsoResponse.size() < 6) {
 							listBitsoResponse.add(bitsoResponse);
 						} else {
@@ -97,6 +114,38 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 							listBitsoResponse.add(bitsoResponse);
 						}
 						break;
+					case "diff-orders":
+						
+						DiffOrdersWocketResponse diffOrderResponse = null;
+						try {
+							diffOrderResponse = objectMapper.readValue(message, DiffOrdersWocketResponse.class);
+						} catch (Exception e) {
+							System.out.println(e);
+						}
+						Integer sequence = null;
+						Integer sequenceMessage = diffOrderResponse.getSequence();
+						Integer markerSide = diffOrderResponse.getPayload().get(0).getMarkerSide();
+						RestPayload payload = orderBook.getPayload();
+						RestOrderBookPayload restOrderBookPayload = null;
+						List<TradeInformation> listMarkerSide = null;
+						if (payload instanceof RestOrderBookPayload) {
+							restOrderBookPayload = (RestOrderBookPayload) payload;
+							sequence = restOrderBookPayload.getSequence();
+						}
+
+						switch (markerSide) {
+						case 1:
+							// bids
+							recentBids.add(diffOrderResponse);
+							break;
+						case 0:
+							// asks
+							recentAsks.add(diffOrderResponse);
+							break;
+						default:
+
+						}
+
 					default:
 
 					}
@@ -104,7 +153,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			}catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
