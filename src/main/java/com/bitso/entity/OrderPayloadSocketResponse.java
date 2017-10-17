@@ -5,8 +5,10 @@
  */
 package com.bitso.entity;
 
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,17 +21,17 @@ import lombok.Setter;
 public class OrderPayloadSocketResponse {
     
     @JsonProperty(value="bids",required=true)
-    private List<WebSocketPayload> bids;
+    private Set<WebSocketPayload> bids;
     @JsonProperty(value="asks",required=true)
-    private List<WebSocketPayload> asks;
+    private Set<WebSocketPayload> asks;
 
     @Override
     public String toString() {
         StringBuilder orderPaylodSocketResponseString = new StringBuilder(100);
         orderPaylodSocketResponseString.append("\nbids:");
-        bids.forEach(wSP -> orderPaylodSocketResponseString.append(wSP));
+        bids.forEach(wSP -> orderPaylodSocketResponseString.append("{").append(wSP).append("}"));
         orderPaylodSocketResponseString.append("\nasks");
-        asks.forEach(wSP -> orderPaylodSocketResponseString.append(wSP));
+        asks.forEach(wSP -> orderPaylodSocketResponseString.append("{").append(wSP).append("}"));
         return orderPaylodSocketResponseString.toString();
     }
     

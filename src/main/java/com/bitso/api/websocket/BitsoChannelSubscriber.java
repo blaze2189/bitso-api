@@ -13,6 +13,6 @@ import com.bitso.api.exception.SocketDisconnectedException;
  */
 public interface BitsoChannelSubscriber {
     
-    //implement Exception
+    
     void subscribeBitsoChannel() throws SocketDisconnectedException;
 }

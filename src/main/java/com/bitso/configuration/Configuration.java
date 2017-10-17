@@ -5,7 +5,23 @@
  */
 package com.bitso.configuration;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import com.bitso.api.util.PayloadSocketComparator;
 import com.bitso.entity.BitsoResponse;
+import com.bitso.entity.WebSocketPayload;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -16,16 +32,6 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 /**
  *
@@ -33,10 +39,11 @@ import org.springframework.web.client.RestTemplate;
  */
 @Component
 public class Configuration {
-
-    private Set setBistoWebSocket = new HashSet();
  
 	RestTemplate restTemplate = new RestTemplate();
+	
+	@Autowired
+	private PayloadSocketComparator payloadSocketComparator;
     
     @Bean
     public RestTemplate restTemplate(){
@@ -79,16 +86,27 @@ public class Configuration {
         return new HttpObjectAggregator(8192);
     }
     
-    @Bean(name="setBitsoWebSocket")
-    public Set setBitsoWebSocket(){
-        return setBistoWebSocket;
-    }
+//    @Bean(name="setBitsoWebSocket")
+//    public Set setBitsoWebSocket(){
+//        return Collections.synchronizedSortedSet(new SortedSet() {
+//		});
+//    }
     
     //List<BitsoResponse> listBitsoResponse= Collections.synchronizedList(new ArrayList<BitsoResponse>());
     
     @Bean(name="tradesList")
     public List<BitsoResponse> listBitsoRespone(){
         return Collections.synchronizedList(new ArrayList<BitsoResponse>());
+    }
+    
+    @Bean(name="topAsks")
+    public Set<WebSocketPayload> listTopAsk(){
+    	return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
+    }
+    
+    @Bean(name="topBids")
+    public Set<WebSocketPayload> listTopBid(){
+    	return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
     }
 
 }

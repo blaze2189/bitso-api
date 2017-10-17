@@ -5,21 +5,22 @@
  */
 package com.bitso.api.websocket.impl;
 
+import java.util.Observable;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.bitso.api.websocket.WebSocketConnection;
+
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.DefaultByteBufHolder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
-import java.util.Observable;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 /**
  *
@@ -96,6 +97,6 @@ implements WebSocketConnection {
 
     @Override
     public Channel getChannel() {
-        return channel;
-    }
+		return channel;
+	}
 }

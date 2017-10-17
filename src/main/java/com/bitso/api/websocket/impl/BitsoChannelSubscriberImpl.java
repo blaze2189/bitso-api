@@ -17,23 +17,23 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author Jorge
  */
 public class BitsoChannelSubscriberImpl implements BitsoChannelSubscriber {
-    
-    @Autowired
-    protected WebSocketConnection webSocketOrder;
-    
-    protected String channelName;
-    
-    @Override
-      public void subscribeBitsoChannel() throws SocketDisconnectedException{
-        String message;
-        if(webSocketOrder.isConeccted()){
-            message = "{ \"action\": \"subscribe\", \"book\": \"btc_mxn\", \"type\": \""+this.channelName+"\" }";
-           DefaultByteBufHolder textWebSocketFrame = new TextWebSocketFrame(message);
-          webSocketOrder.getChannel().writeAndFlush(textWebSocketFrame);
-        }else{
-            message="Web Socket not connected";
-            throw new SocketDisconnectedException (message);
-        }
-    }
-    
+
+	@Autowired
+	protected WebSocketConnection webSocketOrder;
+
+	protected String channelName;
+
+	@Override
+	public void subscribeBitsoChannel() throws SocketDisconnectedException {
+		String message;
+		if (webSocketOrder.isConeccted()) {
+			message = "{ \"action\": \"subscribe\", \"book\": \"btc_mxn\", \"type\": \"" + this.channelName + "\" }";
+			DefaultByteBufHolder textWebSocketFrame = new TextWebSocketFrame(message);
+			webSocketOrder.getChannel().writeAndFlush(textWebSocketFrame);
+		} else {
+			message = "Web Socket not connected";
+			throw new SocketDisconnectedException(message);
+		}
+	}
+
 }

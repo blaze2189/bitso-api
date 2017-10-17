@@ -23,6 +23,7 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan({"com.bitso.controller",
     "com.bitso.configuration",
     "com.bitso.entity",
+    "com.bitso.api.util",
     "com.bitso.rest.client.impl"})
 public class BitsoTickerImplTest {
 
