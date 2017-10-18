@@ -7,23 +7,22 @@ import org.springframework.stereotype.Service;
 import com.bitso.api.exception.SocketDisconnectedException;
 import com.bitso.api.service.OrderBookMaintainerService;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
-import com.bitso.entity.RestOrderBookPayload;
-import com.bitso.entity.RestResponse;
+import com.bitso.entity.OrderBookRestResponse;
 import com.bitso.rest.client.BitsoOrderBook;
 
 @Service
 public class OrderBookMaintainerServiceImpl implements OrderBookMaintainerService{
 
 	@Autowired
-	private BitsoOrderBook bitsoOrderBook;
+	protected BitsoOrderBook bitsoOrderBook;
 	
 	@Autowired
 	@Qualifier("bitsoDiffOrdersChannel")
-	private BitsoChannelSubscriber bitsoDiffOrdersChannel;
+	protected BitsoChannelSubscriber bitsoDiffOrdersChannel;
 	
 	@Autowired
 	@Qualifier("orderBook")
-	private RestResponse orderBook;
+	protected OrderBookRestResponse orderBook;
 	
 	@Autowired
 	@Qualifier("lastSequenceTrade")
@@ -35,9 +34,7 @@ public class OrderBookMaintainerServiceImpl implements OrderBookMaintainerServic
 		try {
 			bitsoDiffOrdersChannel.subscribeBitsoChannel();
 			orderBook=bitsoOrderBook.getOrderBook();
-//			lastSequenceTrade=((RestOrderBookPayload)orderBook.getPayload()).getSequence()!=null?0:1;;
-			lastSequenceTrade=38978974;
-			System.out.println("lastsequencetrade "+lastSequenceTrade);
+			lastSequenceTrade=orderBook.getOrderPayload().getSequence();
 		} catch (SocketDisconnectedException e) {
 			e.printStackTrace();
 		}

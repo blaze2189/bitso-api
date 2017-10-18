@@ -4,6 +4,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import org.junit.Before;
@@ -20,7 +22,7 @@ import com.bitso.api.websocket.impl.BitsoTradesChannel;
 import com.bitso.api.websocket.impl.BitsoWebSocketOrderObserverImpl;
 import com.bitso.api.websocket.impl.WebSocketConnectionImpl;
 import com.bitso.entity.DiffOrdersWocketResponse;
-import com.bitso.entity.RestResponse;
+import com.bitso.entity.OrderBookRestResponse;
 
 public class OrderBookMaintainerServiceImplTest {
 
@@ -46,7 +48,7 @@ public class OrderBookMaintainerServiceImplTest {
 		recentBids = applicationContext.getBean("recentBids", List.class);
 		recentAsks = applicationContext.getBean("recentAsks", List.class);
 		lastSequenceTrade = applicationContext.getBean("lastSequenceTrade", Integer.class);
-		RestResponse orderBook = applicationContext.getBean("orderBook", RestResponse.class);
+		OrderBookRestResponse orderBook = applicationContext.getBean("orderBook", OrderBookRestResponse.class);
 		BitsoChannelSubscriber tradeChannel = applicationContext.getBean(BitsoTradesChannel.class);
 		try (WebSocketConnection webSocketOrder = applicationContext.getBean(WebSocketConnectionImpl.class)) {
 			BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver = applicationContext
@@ -55,10 +57,32 @@ public class OrderBookMaintainerServiceImplTest {
 
 			webSocketOrder.openConnection();
 			orderBookMaintainerService.updateOrderBook();
-			Thread t = new Thread(new OrderMainteiner());
-			t.start();
-			Thread.sleep(20000);
-			t.destroy();
+
+			Runnable task = () -> {
+				{
+					System.out.println("running a thread");
+					while (true) {
+						List<DiffOrdersWocketResponse> newAsks = recentAsks.stream()
+								.filter(ask -> ask.getSequence() > lastSequenceTrade).collect(Collectors.toList());
+						List<DiffOrdersWocketResponse> newBids = recentBids.stream()
+								.filter(bid -> bid.getSequence() > lastSequenceTrade).collect(Collectors.toList());
+						System.out.println("asks");
+						// newAsks.forEach(ask-> System.out.println(ask.getSequence()));
+						// System.out.println(newAsks.size());
+						System.out.println("bids");
+						// System.out.println(newBids.size());
+						// newBids.forEach(bid-> System.out.println(bid.getSequence()));
+					}
+				}
+			};
+			task.run();
+
+//			Thread t = new Thread(task);
+//			t.start();
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+			executor.execute(task);
+			Thread.sleep(2000);
+			executor.shutdown();
 			webSocketOrder.closeConnection();
 			end = true;
 		} catch (Exception e) {
@@ -66,25 +90,6 @@ public class OrderBookMaintainerServiceImplTest {
 		}
 		assertTrue(end);
 		assertNotNull(orderBook);
-
-	}
-
-	private class OrderMainteiner implements Runnable {
-
-		@Override
-		public void run() {
-			System.out.println("running a thread");
-			while(true) {
-			List<DiffOrdersWocketResponse>newAsks= recentAsks.stream().filter(ask -> ask.getSequence()>lastSequenceTrade).collect(Collectors.toList());
-			List<DiffOrdersWocketResponse>newBids= recentBids.stream().filter(bid -> bid.getSequence()>lastSequenceTrade).collect(Collectors.toList());
-			System.out.println("asks");
-			//newAsks.forEach(ask-> System.out.println(ask.getSequence()));
-			System.out.println(newAsks.size());
-			System.out.println("bids");
-			System.out.println(newBids.size());
-//			newBids.forEach(bid-> System.out.println(bid.getSequence()));
-					}
-		}
 
 	}
 

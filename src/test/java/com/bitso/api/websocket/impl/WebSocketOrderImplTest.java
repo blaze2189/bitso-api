@@ -9,9 +9,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,84 +27,117 @@ import com.bitso.api.main.test.ConfigurationTest;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
 import com.bitso.api.websocket.WebSocketConnection;
-import com.bitso.entity.RestPayload;
 import com.bitso.entity.RestResponse;
-import com.bitso.entity.RestTickerPayload;
+import com.bitso.entity.TradePayload;
+import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
-import com.bitso.rest.client.BitsoTicker;
+import com.bitso.rest.client.BitsoTrade;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import scala.sys.process.processInternal;
 
 /**
  *
  * @author Jorge
  */
 public class WebSocketOrderImplTest {
-    
-    ApplicationContext applicationContext;
-    
-    BitsoTicker bitsoTicker = mock(BitsoTicker.class);
 
-    private List<RestResponse> listBitsoResponse;
-    
-    private Set<WebSocketPayload> listTopAsksTrades;
-    
-    private Set<WebSocketPayload> listTopBidsTrades;
-    
-    @Before
-    public void setUp() {
-        applicationContext = new AnnotationConfigApplicationContext();
-        ((AnnotationConfigApplicationContext) applicationContext).register(ConfigurationTest.class);
-        ((AnnotationConfigApplicationContext) applicationContext).refresh();
-        listBitsoResponse = applicationContext.getBean("tradesList", List.class);
-        listTopAsksTrades = applicationContext.getBean("topAsks",Set.class);
-        listTopBidsTrades = applicationContext.getBean("topBids",Set.class);
-    }
-    
-    private RestResponse createBitsoResponse() {
-        RestResponse bitsoResponse = new RestResponse();
-        bitsoResponse.setSuccess(true);
-        RestTickerPayload payload = new RestTickerPayload();
-        payload.setAsk(String.valueOf(Math.random()));
-        payload.setBid(String.valueOf(Math.random()));
-        payload.setBook("btc_mxn");
-        payload.setCreatedAt(Calendar.getInstance().getTime());
-        payload.setHigh(String.valueOf(Math.random()));
-        payload.setLast(String.valueOf(Math.random()));
-        payload.setLow(String.valueOf(Math.random()));
-        payload.setVolume(String.valueOf(Math.random()));
-        payload.setVwap(String.valueOf(Math.random()));
-        bitsoResponse.setPayload(payload);
-        return bitsoResponse;
-    }
-    
-    @Test
-    public void testWebSocketConnection() {
-        ObjectMapper objMapper = new ObjectMapper();
-        boolean end = false;
-        BitsoChannelSubscriber orderChannel = applicationContext.getBean(BitsoOrdersChannel.class);
-        BitsoChannelSubscriber diffOrderChannel = applicationContext.getBean(BitsoDiffOrdersChannel.class);
-        BitsoChannelSubscriber tradeChannel = applicationContext.getBean(BitsoTradesChannel.class);
-        try (WebSocketConnection webSocketOrder = applicationContext.getBean(WebSocketConnectionImpl.class)) {
-            BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver = applicationContext.getBean(BitsoWebSocketOrderObserverImpl.class);
-            ((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).bitsoTicker = this.bitsoTicker;
-            when(bitsoTicker.getTrades()).thenReturn(createBitsoResponse());
-            ((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
-            webSocketOrder.openConnection();
-            orderChannel.subscribeBitsoChannel();
-//            sCDO.subscribeBitsoChannel();
-//            sT.subscribeBitsoChannel();
-            Thread.sleep(20000);
-            
-            webSocketOrder.closeConnection();
-            bitsoWebSocketOrderObserver.getMessageReceived().forEach((s) -> {
-               
-            });
+	ApplicationContext applicationContext;
+
+	BitsoTrade bitsoTrade = mock(BitsoTrade.class);
+
+	private List<TradeRestResponse> listBitsoResponse;
+
+	private Set<WebSocketPayload> listTopAsksTrades;
+
+	private Set<WebSocketPayload> listTopBidsTrades;
+
+	private Integer totalRecentTrades;
+
+	@Before
+	public void setUp() {
+		applicationContext = new AnnotationConfigApplicationContext();
+		((AnnotationConfigApplicationContext) applicationContext).register(ConfigurationTest.class);
+		((AnnotationConfigApplicationContext) applicationContext).refresh();
+		listBitsoResponse = applicationContext.getBean("tradesList", List.class);
+		listTopAsksTrades = applicationContext.getBean("topAsks", Set.class);
+		listTopBidsTrades = applicationContext.getBean("topBids", Set.class);
+		totalRecentTrades = applicationContext.getBean("totalRecentTrades", Integer.class);
+		totalRecentTrades = 10;
+	}
+
+	private TradeRestResponse createBitsoResponse() {
+		TradeRestResponse bitsoResponse = new TradeRestResponse();
+		bitsoResponse.setSuccess(true);
+		List<TradePayload> listTradePayload = new ArrayList<>();
+		TradePayload payload;
+
+		for (int i = 0; i < 16; i++) {
+			payload = new TradePayload();
+			payload.setBook("btc_mxn");
+			payload.setCreatedAt(Calendar.getInstance().getTime());
+			payload.setAmount(String.valueOf(Math.random()));
+			payload.setMakerSide("buy");
+			payload.setPrice(String.valueOf(Math.random()));
+			payload.setTid(String.valueOf(Math.random()));
+
+			listTradePayload.add(payload);
+
+		}
+
+		bitsoResponse.setTradePayload(listTradePayload);
+
+		return bitsoResponse;
+	}
+
+	@Test
+	public void testWebSocketConnection() {
+		ObjectMapper objMapper = new ObjectMapper();
+		boolean end = false;
+		BitsoChannelSubscriber orderChannel = applicationContext.getBean(BitsoOrdersChannel.class);
+		BitsoChannelSubscriber diffOrderChannel = applicationContext.getBean(BitsoDiffOrdersChannel.class);
+		BitsoChannelSubscriber tradeChannel = applicationContext.getBean(BitsoTradesChannel.class);
+		try (WebSocketConnection webSocketOrder = applicationContext.getBean(WebSocketConnectionImpl.class)) {
+			BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver = applicationContext
+					.getBean(BitsoWebSocketOrderObserverImpl.class);
+			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).bitsoTrade = this.bitsoTrade;
+			when(bitsoTrade.getRecentTrades()).thenReturn(createBitsoResponse());
+			((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
+			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).totalRecentTrades = 10;
+			webSocketOrder.openConnection();
+//			orderChannel.subscribeBitsoChannel();
+			// diffOrderChannel.subscribeBitsoChannel();
+			 tradeChannel.subscribeBitsoChannel();
+
+			Runnable task = () -> {
+				System.out.println("display " + totalRecentTrades + " of "
+						+listBitsoResponse.size());
+				listBitsoResponse.forEach(new Consumer<TradeRestResponse>() {
+					int i = 0;
+
+					public void accept(TradeRestResponse tradeRestResponse) {
+						if (i < totalRecentTrades) {
+							System.out.println(tradeRestResponse);
+						}
+					}
+				});
+			};
+			task.run();
+			ExecutorService executor = Executors.newSingleThreadExecutor();
+//			executor.execute(task);
+			Thread.sleep(20000);
+			executor.shutdown();
+			executor.awaitTermination(10, TimeUnit.SECONDS);
+			webSocketOrder.closeConnection();
+			bitsoWebSocketOrderObserver.getMessageReceived().forEach((s) -> {
+
+			});
 			assertTrue(listBitsoResponse.size() > 0);
-            end = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        assertTrue(end);
-    }
-    
+			end = true;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		assertTrue(end);
+	}
+
 }

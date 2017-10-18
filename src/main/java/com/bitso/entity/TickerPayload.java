@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RestTickerPayload extends RestPayload {
+public class TickerPayload extends RestPayload {
 
 	@JsonProperty("high")
 	private String high;

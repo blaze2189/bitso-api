@@ -5,10 +5,11 @@
  */
 package com.bitso.controller;
 
-import com.bitso.entity.RestResponse;
-import com.bitso.rest.client.BitsoTicker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+
+import com.bitso.entity.TradeRestResponse;
+import com.bitso.rest.client.BitsoTicker;
 
 /**
  *
@@ -20,9 +21,9 @@ public class TickerController {
     @Autowired
     private BitsoTicker bitsoTicker;
 
-    public RestResponse getBistoResponse() {
+    public TradeRestResponse getBistoResponse() {
 
-        return bitsoTicker.getTrades();
+        return bitsoTicker.getTradingInformation();
 
     }
 

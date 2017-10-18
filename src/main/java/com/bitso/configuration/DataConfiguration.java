@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 
 import com.bitso.api.util.PayloadSocketComparator;
 import com.bitso.entity.DiffOrdersWocketResponse;
-import com.bitso.entity.RestResponse;
+import com.bitso.entity.OrderBookRestResponse;
+import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
 
 @Component
@@ -21,15 +22,32 @@ public class DataConfiguration {
 	@Autowired
 	private PayloadSocketComparator payloadSocketComparator;
 
-	@Bean(name="lastSequenceTrade")
+	@Bean(name = "totalBestTrades")
+	private Integer totalBestTraiding() {
+		return 0;
+	}
+
+	@Bean(name = "totalRecentTrades")
+	private Integer totalRecentTraiding() {
+		return 0;
+	}
+
+	@Bean
+	private TradeRestResponse tradeRestResponse() {
+		return new TradeRestResponse();
+	}
+	
+	@Bean(name = "lastSequenceTrade")
 	public Integer lastSequenceTrade() {
 		return 0;
 	}
-	
+
 	@Bean(name = "tradesList")
-	public List<RestResponse> listBitsoRespone() {
-		return Collections.synchronizedList(new ArrayList<RestResponse>());
+	public List<TradeRestResponse> listBitsoRespone() {
+		return Collections.synchronizedList(new ArrayList<TradeRestResponse>());
 	}
+	
+	
 
 	@Bean(name = "topAsks")
 	public Set<WebSocketPayload> listTopAsk() {
@@ -40,20 +58,20 @@ public class DataConfiguration {
 	public Set<WebSocketPayload> listTopBid() {
 		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
-	
-	@Bean(name="orderBook")
-	public RestResponse orderBook(){
-		return new RestResponse();
+
+	@Bean(name = "orderBook")
+	public OrderBookRestResponse orderBook() {
+		return new OrderBookRestResponse();
 	}
-	
-	@Bean(name="recentBids")
-	public List<DiffOrdersWocketResponse> recentBids(){
-		return  Collections.synchronizedList(new ArrayList<>());
+
+	@Bean(name = "recentBids")
+	public List<DiffOrdersWocketResponse> recentBids() {
+		return Collections.synchronizedList(new ArrayList<>());
 	}
-	
-	@Bean(name="recentAsks")
-	public List<DiffOrdersWocketResponse> recentAsks(){
-		return  Collections.synchronizedList(new ArrayList<>());
+
+	@Bean(name = "recentAsks")
+	public List<DiffOrdersWocketResponse> recentAsks() {
+		return Collections.synchronizedList(new ArrayList<>());
 	}
-	
+
 }

@@ -1,9 +1,9 @@
 package com.bitso.rest.client;
 
-import com.bitso.entity.RestResponse;
+import com.bitso.entity.OrderBookRestResponse;
 
 public interface BitsoOrderBook {
 
-	RestResponse getOrderBook();
+	OrderBookRestResponse getOrderBook();
 	
 }

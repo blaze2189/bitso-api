@@ -6,6 +6,8 @@
 package com.bitso.rest.client.impl;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,20 +16,22 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.bitso.api.main.test.ConfigurationTest;
 import com.bitso.controller.TradeController;
+import com.bitso.entity.RestResponse;
 import com.bitso.entity.TradeRestResponse;
+import com.bitso.rest.client.BitsoTrade;
 
 /**
  *
  * @author Jorge
  */
-public class BitsoTickerImplTest {
+public class BitsoTradeImplTest {
 
 	ApplicationContext applicationContext;
 
 	@Test
 	public void callingRealMethod() {
-		TradeController tC = applicationContext.getBean(TradeController.class);
-		TradeRestResponse bR = tC.getBistoResponse();
+		TradeController tradeController = applicationContext.getBean(TradeController.class);
+		TradeRestResponse bR = tradeController.getBistoResponse();
 		assertNotNull(bR);
 	}
 

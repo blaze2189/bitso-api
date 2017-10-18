@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.bitso.rest.client.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +12,22 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import com.bitso.entity.TradeRestResponse;
-import com.bitso.rest.client.BitsoTicker;
+import com.bitso.rest.client.BitsoTrade;
 
-/**
- *
- * @author Jorge
- */
 @Component
-public class BitsoTickerImpl implements BitsoTicker {
+public class BitsoTradeImpl implements BitsoTrade {
 
-	@Value("${bitso.url.ticker}")
-    private String bitsoTicker;
+	@Value("${bitso.url.trades}")
+    private String bitsoTrade;
+	
+	@Value("${bitso.book.btc_mxn}")
+	private String bookBtcMxn;
 
     @Autowired
     protected RestTemplate restTemplate;
 
     @Override
-    public TradeRestResponse getTradingInformation() {
+    public TradeRestResponse getRecentTrades() {
     	TradeRestResponse returnResponse = null;
         HttpHeaders tokenHeader = new HttpHeaders();
         tokenHeader.add("User-Agent", "curl/7.51.0");
@@ -41,7 +35,7 @@ public class BitsoTickerImpl implements BitsoTicker {
         HttpEntity request = new HttpEntity(tokenHeader);
         ResponseEntity<TradeRestResponse> response;
         try {
-            response = restTemplate.exchange(bitsoTicker, HttpMethod.GET, request, TradeRestResponse.class);
+            response = restTemplate.exchange(bitsoTrade+"?book="+bookBtcMxn, HttpMethod.GET, request, TradeRestResponse.class);
             returnResponse = response.getBody();
         } catch (HttpStatusCodeException e) {
             HttpStatus status = e.getStatusCode();
@@ -50,4 +44,5 @@ public class BitsoTickerImpl implements BitsoTicker {
         return returnResponse;
     }
 
+	
 }

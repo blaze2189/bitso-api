@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RestOrderBookPayload extends RestPayload {
+public class OrderBookPayload extends RestPayload {
 
 	@JsonProperty("asks")
 	private List<TradeInformation> asks;

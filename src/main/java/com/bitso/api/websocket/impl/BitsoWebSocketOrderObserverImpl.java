@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,13 +19,13 @@ import org.springframework.stereotype.Component;
 
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
 import com.bitso.entity.DiffOrdersWocketResponse;
+import com.bitso.entity.OrderBookRestResponse;
 import com.bitso.entity.OrderSocketResponse;
-import com.bitso.entity.RestOrderBookPayload;
-import com.bitso.entity.RestPayload;
-import com.bitso.entity.RestResponse;
 import com.bitso.entity.TradeInformation;
+import com.bitso.entity.TradePayload;
+import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
-import com.bitso.rest.client.BitsoTicker;
+import com.bitso.rest.client.BitsoTrade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -35,12 +36,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObserver {
 
 	@Autowired
-	protected BitsoTicker bitsoTicker;
+	protected BitsoTrade bitsoTrade;
+
+	@Autowired
+	protected TradeRestResponse bitsoTradeResponse;
+
+	@Autowired
+	@Qualifier("totalRecentTrades")
+	protected Integer totalRecentTrades;
 
 	private List<String> messageReceived;
 	@Autowired
 	@Qualifier("tradesList")
-	private List<RestResponse> listBitsoResponse;
+	private List<TradeRestResponse> listBitsoResponse;
 	private Boolean isConnected;
 
 	@Autowired
@@ -70,7 +78,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	}
 
 	@Override
-	public List<RestResponse> getListBitsoRespone() {
+	public List<TradeRestResponse> getListBitsoRespone() {
 		return listBitsoResponse;
 	}
 
@@ -81,14 +89,54 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 
 	@Autowired
 	@Qualifier("orderBook")
-	public RestResponse orderBook;
+	public OrderBookRestResponse orderBook;
 
 	@Autowired
 	@Qualifier("lastSequenceTrade")
 	public Integer lastSequenceTrade;
 
 	@Override
+	public void tradeSubscribeAction() {
+		bitsoTradeResponse = bitsoTrade.getRecentTrades();
+		List<TradePayload> listTradePayload = bitsoTradeResponse.getTradePayload();
+	}
+
+	@Override
+	public void orderSubscribeAction(String message) {
+		OrderSocketResponse orderSocketResponse = objectMapper.readValue(message, OrderSocketResponse.class);
+		setBids = orderSocketResponse.getOrderPayloadSocketResponse().getBids();
+		setAsks = orderSocketResponse.getOrderPayloadSocketResponse().getAsks();
+		messageReceived.add(message);
+	}
+
+	@Override
+	public void diffOrderSubscribeAction(String message) {
+		DiffOrdersWocketResponse diffOrderResponse = null;
+		try {
+			diffOrderResponse = objectMapper.readValue(message, DiffOrdersWocketResponse.class);
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		Integer markerSide = diffOrderResponse.getPayload().get(0).getMarkerSide();
+		List<TradeInformation> listMarkerSide = null;
+		switch (markerSide) {
+		case 1:
+			// bids
+			recentBids.add(diffOrderResponse);
+			break;
+		case 0:
+			// asks
+			recentAsks.add(diffOrderResponse);
+			break;
+		default:
+
+		}
+
+	}
+
+	@Override
 	public void update(Observable o, Object arg) {
+		System.out.println("message " + arg);
 		if (arg instanceof String) {
 			String message = (String) arg;
 
@@ -100,52 +148,14 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 					switch (type) {
 					case "ka":
 						break;
+					case "trades":
+						tradeSubscribeAction();
+						break;
 					case "orders":
-						OrderSocketResponse orderSocketResponse = objectMapper.readValue(message,
-								OrderSocketResponse.class);
-						setBids = orderSocketResponse.getOrderPayloadSocketResponse().getBids();
-						setAsks = orderSocketResponse.getOrderPayloadSocketResponse().getAsks();
-						messageReceived.add(message);
-						RestResponse bitsoResponse = bitsoTicker.getTrades();
-						if (listBitsoResponse.size() < 6) {
-							listBitsoResponse.add(bitsoResponse);
-						} else {
-							listBitsoResponse.remove(0);
-							listBitsoResponse.add(bitsoResponse);
-						}
+						orderSubscribeAction();
 						break;
 					case "diff-orders":
-						
-						DiffOrdersWocketResponse diffOrderResponse = null;
-						try {
-							diffOrderResponse = objectMapper.readValue(message, DiffOrdersWocketResponse.class);
-						} catch (Exception e) {
-							System.out.println(e);
-						}
-						Integer sequence = null;
-						Integer sequenceMessage = diffOrderResponse.getSequence();
-						Integer markerSide = diffOrderResponse.getPayload().get(0).getMarkerSide();
-						RestPayload payload = orderBook.getPayload();
-						RestOrderBookPayload restOrderBookPayload = null;
-						List<TradeInformation> listMarkerSide = null;
-						if (payload instanceof RestOrderBookPayload) {
-							restOrderBookPayload = (RestOrderBookPayload) payload;
-							sequence = restOrderBookPayload.getSequence();
-						}
-
-						switch (markerSide) {
-						case 1:
-							// bids
-							recentBids.add(diffOrderResponse);
-							break;
-						case 0:
-							// asks
-							recentAsks.add(diffOrderResponse);
-							break;
-						default:
-
-						}
-
+						diffOrderSubscribeAction();
 					default:
 
 					}
