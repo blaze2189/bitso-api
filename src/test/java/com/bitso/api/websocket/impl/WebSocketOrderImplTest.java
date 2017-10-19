@@ -91,7 +91,6 @@ public class WebSocketOrderImplTest {
 
 	@Test
 	public void testWebSocketConnection() {
-		ObjectMapper objMapper = new ObjectMapper();
 		boolean end = false;
 		BitsoChannelSubscriber orderChannel = applicationContext.getBean(BitsoOrdersChannel.class);
 		BitsoChannelSubscriber diffOrderChannel = applicationContext.getBean(BitsoDiffOrdersChannel.class);

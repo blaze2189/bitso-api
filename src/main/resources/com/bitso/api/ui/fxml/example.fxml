@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?language JavaScript?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.collections.*?>
+<?import com.bitso.entity.*?>
+
+
+<VBox fx:controller="com.bitso.controller.TickerController" fx:id="vbox"
+   layoutX="10.0" layoutY="10.0" prefHeight="450.0" prefWidth="900.0" spacing="10"
+  xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
+  <style>
+	-fx-padding: 10;
+	-fx-border-style: solid inside;
+	-fx-border-width: 2;
+	-fx-border-insets: 5;
+	-fx-border-radius: 5;
+	-fx-border-color: blue;
+  </style>
+  <children>
+    <Label fx:id="inputLbl" alignment="CENTER_LEFT" cache="true" cacheHint="SCALE" prefHeight="30.0" prefWidth="200.0" text="Please insert Your Input here:" textAlignment="LEFT" />
+    <TextField fx:id="inputText" prefWidth="100.0" />
+    <Button fx:id="okBtn" onAction="getBitsoResponse()" alignment="CENTER_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" text="OK" textAlignment="CENTER" />
+    <Label fx:id="outputLbl" alignment="CENTER_LEFT" cache="true" cacheHint="SCALE" prefHeight="30.0" prefWidth="200.0" text="Your Input:" textAlignment="LEFT" />
+    <TextArea fx:id="outputText" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
+  </children>
+  <TableView fx:id="tableView">
+    <columns>
+      <TableColumn text="Book" fx:id="book">
+        <cellValueFactory><PropertyValueFactory property="book" />
+        </cellValueFactory>
+      </TableColumn>
+      <TableColumn text="Maker Side" fx:id="makerSide">
+        <cellValueFactory><PropertyValueFactory property="makerSide" />
+        </cellValueFactory>
+      </TableColumn>
+      <TableColumn text="Amount" fx:id="amount">
+        <cellValueFactory><PropertyValueFactory property="amount" />
+        </cellValueFactory>
+      </TableColumn>
+    </columns>
+   </TableView>
+</VBox>

@@ -43,10 +43,6 @@ public class DataConfiguration {
 		return 0;
 	}
 
-//	@Bean(name = "tradesList")
-//	public List<TradeRestResponse> listBitsoRespone() {
-//		return Collections.synchronizedList(new ArrayList<TradeRestResponse>());
-//	}
 	List<TradePayload> listTradePayload =Collections.synchronizedList(new ArrayList<TradePayload>());
 	@Bean(name = "listTradePayload")
 	public List<TradePayload> listTradePayload() {

@@ -110,6 +110,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	@Override
 	public void orderSubscribeAction(String message) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
+
 		OrderSocketResponse orderSocketResponse = objectMapper.readValue(message, OrderSocketResponse.class);
 		setBids = orderSocketResponse.getOrderPayloadSocketResponse().getBids();
 		setAsks = orderSocketResponse.getOrderPayloadSocketResponse().getAsks();
