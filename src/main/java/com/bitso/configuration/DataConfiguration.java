@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import com.bitso.api.util.PayloadSocketComparator;
 import com.bitso.entity.DiffOrdersWocketResponse;
 import com.bitso.entity.OrderBookRestResponse;
+import com.bitso.entity.TradePayload;
 import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
 
@@ -42,15 +43,18 @@ public class DataConfiguration {
 		return 0;
 	}
 
-	@Bean(name = "tradesList")
-	public List<TradeRestResponse> listBitsoRespone() {
-		return Collections.synchronizedList(new ArrayList<TradeRestResponse>());
-	}
+//	@Bean(name = "tradesList")
+//	public List<TradeRestResponse> listBitsoRespone() {
+//		return Collections.synchronizedList(new ArrayList<TradeRestResponse>());
+//	}
+	List<TradePayload> listTradePayload =Collections.synchronizedList(new ArrayList<TradePayload>());
+	@Bean(name = "listTradePayload")
+	public List<TradePayload> listTradePayload() {
+		return listTradePayload;
+	}	
 	
-	
-
 	@Bean(name = "topAsks")
-	public Set<WebSocketPayload> listTopAsk() {
+	public Set<WebSocketPayload> listTOopAsk() {
 		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 

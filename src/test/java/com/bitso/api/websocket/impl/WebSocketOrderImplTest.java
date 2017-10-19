@@ -34,7 +34,6 @@ import com.bitso.entity.WebSocketPayload;
 import com.bitso.rest.client.BitsoTrade;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import scala.sys.process.processInternal;
 
 /**
  *
@@ -46,7 +45,7 @@ public class WebSocketOrderImplTest {
 
 	BitsoTrade bitsoTrade = mock(BitsoTrade.class);
 
-	private List<TradeRestResponse> listBitsoResponse;
+	private List<TradePayload> listBitsoResponse;
 
 	private Set<WebSocketPayload> listTopAsksTrades;
 
@@ -59,7 +58,7 @@ public class WebSocketOrderImplTest {
 		applicationContext = new AnnotationConfigApplicationContext();
 		((AnnotationConfigApplicationContext) applicationContext).register(ConfigurationTest.class);
 		((AnnotationConfigApplicationContext) applicationContext).refresh();
-		listBitsoResponse = applicationContext.getBean("tradesList", List.class);
+		listBitsoResponse = applicationContext.getBean("listTradePayload", List.class);
 		listTopAsksTrades = applicationContext.getBean("topAsks", Set.class);
 		listTopBidsTrades = applicationContext.getBean("topBids", Set.class);
 		totalRecentTrades = applicationContext.getBean("totalRecentTrades", Integer.class);
@@ -112,10 +111,10 @@ public class WebSocketOrderImplTest {
 			Runnable task = () -> {
 				System.out.println("display " + totalRecentTrades + " of "
 						+listBitsoResponse.size());
-				listBitsoResponse.forEach(new Consumer<TradeRestResponse>() {
+				listBitsoResponse.forEach(new Consumer<TradePayload>() {
 					int i = 0;
 
-					public void accept(TradeRestResponse tradeRestResponse) {
+					public void accept(TradePayload tradeRestResponse) {
 						if (i < totalRecentTrades) {
 							System.out.println(tradeRestResponse);
 						}
@@ -124,7 +123,7 @@ public class WebSocketOrderImplTest {
 			};
 			task.run();
 			ExecutorService executor = Executors.newSingleThreadExecutor();
-//			executor.execute(task);
+			executor.execute(task);
 			Thread.sleep(20000);
 			executor.shutdown();
 			executor.awaitTermination(10, TimeUnit.SECONDS);
@@ -132,6 +131,7 @@ public class WebSocketOrderImplTest {
 			bitsoWebSocketOrderObserver.getMessageReceived().forEach((s) -> {
 
 			});
+			listBitsoResponse=bitsoWebSocketOrderObserver.getListBitsoRespone();
 			assertTrue(listBitsoResponse.size() > 0);
 			end = true;
 		} catch (Exception e) {

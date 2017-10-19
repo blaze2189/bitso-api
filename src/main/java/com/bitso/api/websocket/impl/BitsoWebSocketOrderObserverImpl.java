@@ -26,6 +26,8 @@ import com.bitso.entity.TradePayload;
 import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
 import com.bitso.rest.client.BitsoTrade;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -46,9 +48,9 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	protected Integer totalRecentTrades;
 
 	private List<String> messageReceived;
-	@Autowired
-	@Qualifier("tradesList")
-	private List<TradeRestResponse> listBitsoResponse;
+//	@Autowired
+//	@Qualifier("tradesList")
+//	private List<TradeRestResponse> listBitsoResponse;
 	private Boolean isConnected;
 
 	@Autowired
@@ -78,8 +80,8 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	}
 
 	@Override
-	public List<TradeRestResponse> getListBitsoRespone() {
-		return listBitsoResponse;
+	public List<TradePayload> getListBitsoRespone() {
+		return listTradePayload;
 	}
 
 	@Override
@@ -95,14 +97,19 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	@Qualifier("lastSequenceTrade")
 	public Integer lastSequenceTrade;
 
+	@Autowired
+	@Qualifier("listTradePayload")
+	List<TradePayload> listTradePayload;
+	
 	@Override
 	public void tradeSubscribeAction() {
 		bitsoTradeResponse = bitsoTrade.getRecentTrades();
-		List<TradePayload> listTradePayload = bitsoTradeResponse.getTradePayload();
+		 listTradePayload = bitsoTradeResponse.getTradePayload();
 	}
 
 	@Override
-	public void orderSubscribeAction(String message) {
+	public void orderSubscribeAction(String message) throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper objectMapper = new ObjectMapper();
 		OrderSocketResponse orderSocketResponse = objectMapper.readValue(message, OrderSocketResponse.class);
 		setBids = orderSocketResponse.getOrderPayloadSocketResponse().getBids();
 		setAsks = orderSocketResponse.getOrderPayloadSocketResponse().getAsks();
@@ -110,15 +117,11 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	}
 
 	@Override
-	public void diffOrderSubscribeAction(String message) {
+	public void diffOrderSubscribeAction(String message)throws JsonParseException, JsonMappingException, IOException {
 		DiffOrdersWocketResponse diffOrderResponse = null;
-		try {
+		ObjectMapper objectMapper = new ObjectMapper();
 			diffOrderResponse = objectMapper.readValue(message, DiffOrdersWocketResponse.class);
-		} catch (Exception e) {
-			System.out.println(e);
-		}
 		Integer markerSide = diffOrderResponse.getPayload().get(0).getMarkerSide();
-		List<TradeInformation> listMarkerSide = null;
 		switch (markerSide) {
 		case 1:
 			// bids
@@ -152,10 +155,10 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 						tradeSubscribeAction();
 						break;
 					case "orders":
-						orderSubscribeAction();
+						orderSubscribeAction(message);
 						break;
 					case "diff-orders":
-						diffOrderSubscribeAction();
+						diffOrderSubscribeAction(message);
 					default:
 
 					}
@@ -163,12 +166,10 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			} 
 
 		}
-		if (arg instanceof Boolean) {
+		else if (arg instanceof Boolean) {
 			isConnected = (Boolean) arg;
 		}
 	}

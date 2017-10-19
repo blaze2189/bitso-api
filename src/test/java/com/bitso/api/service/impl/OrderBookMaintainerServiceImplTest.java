@@ -58,31 +58,29 @@ public class OrderBookMaintainerServiceImplTest {
 			webSocketOrder.openConnection();
 			orderBookMaintainerService.updateOrderBook();
 
-			Runnable task = () -> {
-				{
-					System.out.println("running a thread");
-					while (true) {
-						List<DiffOrdersWocketResponse> newAsks = recentAsks.stream()
-								.filter(ask -> ask.getSequence() > lastSequenceTrade).collect(Collectors.toList());
-						List<DiffOrdersWocketResponse> newBids = recentBids.stream()
-								.filter(bid -> bid.getSequence() > lastSequenceTrade).collect(Collectors.toList());
-						System.out.println("asks");
-						// newAsks.forEach(ask-> System.out.println(ask.getSequence()));
-						// System.out.println(newAsks.size());
-						System.out.println("bids");
-						// System.out.println(newBids.size());
-						// newBids.forEach(bid-> System.out.println(bid.getSequence()));
-					}
-				}
-			};
-			task.run();
-
-//			Thread t = new Thread(task);
-//			t.start();
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			executor.execute(task);
+//			Runnable task = () -> {
+//				{
+//					System.out.println("running a thread");
+//					while (true) {
+//						List<DiffOrdersWocketResponse> newAsks = recentAsks.stream()
+//								.filter(ask -> ask.getSequence() > lastSequenceTrade).collect(Collectors.toList());
+//						List<DiffOrdersWocketResponse> newBids = recentBids.stream()
+//								.filter(bid -> bid.getSequence() > lastSequenceTrade).collect(Collectors.toList());
+//						System.out.println("asks");
+//						// newAsks.forEach(ask-> System.out.println(ask.getSequence()));
+//						// System.out.println(newAsks.size());
+//						System.out.println("bids");
+//						// System.out.println(newBids.size());
+//						// newBids.forEach(bid-> System.out.println(bid.getSequence()));
+//					}
+//				}
+//			};
+//			task.run();
+//
+//			ExecutorService executor = Executors.newSingleThreadExecutor();
+//			executor.execute(task);
 			Thread.sleep(2000);
-			executor.shutdown();
+//			executor.shutdown();
 			webSocketOrder.closeConnection();
 			end = true;
 		} catch (Exception e) {

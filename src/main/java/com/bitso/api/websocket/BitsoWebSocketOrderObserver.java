@@ -5,10 +5,13 @@
  */
 package com.bitso.api.websocket;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Observer;
 
-import com.bitso.entity.TradeRestResponse;
+import com.bitso.entity.TradePayload;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  *
@@ -17,10 +20,10 @@ import com.bitso.entity.TradeRestResponse;
 public interface BitsoWebSocketOrderObserver extends Observer {
     
     List<String> getMessageReceived();
-    List<TradeRestResponse> getListBitsoRespone();
+    List<TradePayload> getListBitsoRespone();
     Boolean isConnected();
      void tradeSubscribeAction();
-     void orderSubscribeAction(String message);
-     void diffOrderSubscribeAction(String message);
+     void orderSubscribeAction(String message)throws JsonParseException, JsonMappingException, IOException;
+     void diffOrderSubscribeAction(String message)throws JsonParseException, JsonMappingException, IOException;
     
 }
