@@ -8,6 +8,7 @@ import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.bitso.api.util.PayloadSocketComparator;
@@ -17,9 +18,16 @@ import com.bitso.entity.TradePayload;
 import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
 
-@Component
-public class DataConfiguration {
+import javafx.collections.FXCollections;
+import lombok.Getter;
+import lombok.Setter;
 
+@Component
+@Scope("singleton")
+@Getter
+@Setter
+public class DataConfiguration {
+	
 	@Autowired
 	private PayloadSocketComparator payloadSocketComparator;
 
@@ -43,14 +51,15 @@ public class DataConfiguration {
 		return 0;
 	}
 
-	List<TradePayload> listTradePayload =Collections.synchronizedList(new ArrayList<TradePayload>());
+//	private List<TradePayload> listTradePayload =Collections.synchronizedList(new ArrayList<TradePayload>());
+	private List<TradePayload> listTradePayload =FXCollections.observableArrayList();
 	@Bean(name = "listTradePayload")
 	public List<TradePayload> listTradePayload() {
 		return listTradePayload;
 	}	
 	
 	@Bean(name = "topAsks")
-	public Set<WebSocketPayload> listTOopAsk() {
+	public Set<WebSocketPayload> listTopAsk() {
 		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 

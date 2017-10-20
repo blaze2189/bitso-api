@@ -11,17 +11,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.DiffOrdersWocketResponse;
 import com.bitso.entity.OrderBookRestResponse;
 import com.bitso.entity.OrderSocketResponse;
-import com.bitso.entity.TradeInformation;
 import com.bitso.entity.TradePayload;
 import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
@@ -81,7 +80,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 
 	@Override
 	public List<TradePayload> getListBitsoRespone() {
-		return listTradePayload;
+		return dataConfiguration.getListTradePayload();
 	}
 
 	@Override
@@ -97,14 +96,18 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	@Qualifier("lastSequenceTrade")
 	public Integer lastSequenceTrade;
 
+//	@Autowired
+//	List<TradePayload> listTradePayload;
+	
 	@Autowired
-	@Qualifier("listTradePayload")
-	List<TradePayload> listTradePayload;
+	private DataConfiguration dataConfiguration;
 	
 	@Override
 	public void tradeSubscribeAction() {
+		System.out.println("Dataocnfiguration(tradeSubscribe): "+dataConfiguration);
 		bitsoTradeResponse = bitsoTrade.getRecentTrades();
-		 listTradePayload = bitsoTradeResponse.getTradePayload();
+		dataConfiguration.setListTradePayload(bitsoTradeResponse.getTradePayload());
+//		listTradePayload = bitsoTradeResponse.getTradePayload();
 	}
 
 	@Override

@@ -13,14 +13,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Component;
 
+import com.bitso.api.main.InitApp;
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.TradePayload;
 import com.bitso.entity.TradeRestResponse;
 import com.bitso.rest.client.BitsoTicker;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,7 +35,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
  *
  * @author Jorge
  */
-@Controller
+@Component
 public class TickerController implements Initializable {
 
 	@FXML
@@ -47,8 +50,10 @@ public class TickerController implements Initializable {
 	@Autowired
 	private BitsoTicker bitsoTicker;
 
-	@Autowired
+	// @Autowired
 	private BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver;
+
+	private DataConfiguration dataConfiguration;
 
 	@FXML
 	public TradeRestResponse getBitsoResponse() {
@@ -60,45 +65,58 @@ public class TickerController implements Initializable {
 		System.out.println("a;ldfkjasdf;epwo;fidfh");
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
+		dataConfiguration = InitApp.getInstance().getApplicationContext().getBean(DataConfiguration.class);
+		bitsoWebSocketOrderObserver = InitApp.getInstance().getApplicationContext()
+				.getBean(BitsoWebSocketOrderObserver.class);
+		System.out.println("initializer-----------------------------------------------------------");
 		book.setCellValueFactory(new PropertyValueFactory<TradePayload, String>("book"));
 		makerSide.setCellValueFactory(new PropertyValueFactory<TradePayload, String>("makerSide"));
 		amount.setCellValueFactory(new PropertyValueFactory<TradePayload, String>("amount"));
 		try {
-			Thread.sleep(30000);
+			Thread.sleep(20000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(bitsoWebSocketOrderObserver);
-		List<TradePayload> listBitsoResponse=null;
-		if (bitsoWebSocketOrderObserver != null)
+		System.out.println("DataConfiguration (TickerController): " + dataConfiguration);
+		List<TradePayload> listBitsoResponse = null;
+		if (dataConfiguration != null)
 			listBitsoResponse = bitsoWebSocketOrderObserver.getListBitsoRespone();
 		if (listBitsoResponse != null && listBitsoResponse.size() > 0)
-			tableView.getItems().setAll(listBitsoResponse);
+			tableView.getItems().setAll(initList());
+
+//		((ObservableList) listBitsoResponse).addListener(new ListChangeListener<TradePayload>() {
+//			@Override
+//			public void onChanged(javafx.collections.ListChangeListener.Change<? extends TradePayload> c) {
+//				System.out.println("Changed on " + c);
+////				if (c.next()) {
+////					System.out.println(c.getFrom());
+////				}
+////				tableView.getItems().add(new TradePayload());
+////				tableView.refresh();
+//			}
+//
+//		});
+
 	}
 
 	private List<TradePayload> initList() {
 		ObservableList<TradePayload> lP = FXCollections.observableArrayList();
 
-		// lP.addListener(new ListChangeListener<TradePayload>() {
-		// @Override
-		// public void onChanged(javafx.collections.ListChangeListener.Change<? extends
-		// TradePayload> c) {
-		// System.out.println("Changed on " + c);
-		// if (c.next()) {
-		// System.out.println(c.getFrom());
-		// }
-		//// tableView.getItems().add(c);
-		//// tableView.refresh();
-		// }
-		//
-		// });
+		// lP.addC
 
 		Runnable task = () -> {
 			System.out.println("Task is running");
 			for (;;) {
+				try {
+					Thread.sleep(20000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				TradePayload p = new TradePayload();
 				p.setBook("btc_mxn");
 				p.setCreatedAt(new Date());
@@ -108,7 +126,7 @@ public class TickerController implements Initializable {
 				p.setTid(String.valueOf(Math.random()));
 				lP.add(p);
 				tableView.getItems().add(p);
-				// tableView.refresh();
+				 tableView.refresh();
 				System.out.println("add");
 			}
 		};

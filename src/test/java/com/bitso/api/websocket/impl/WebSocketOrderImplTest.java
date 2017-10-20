@@ -13,9 +13,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import org.junit.Before;
@@ -27,13 +24,11 @@ import com.bitso.api.main.test.ConfigurationTest;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
 import com.bitso.api.websocket.WebSocketConnection;
-import com.bitso.entity.RestResponse;
+import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.TradePayload;
 import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
 import com.bitso.rest.client.BitsoTrade;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 /**
  *
@@ -50,6 +45,8 @@ public class WebSocketOrderImplTest {
 	private Set<WebSocketPayload> listTopAsksTrades;
 
 	private Set<WebSocketPayload> listTopBidsTrades;
+	
+	private DataConfiguration dataConfiguration;
 
 	private Integer totalRecentTrades;
 
@@ -58,6 +55,7 @@ public class WebSocketOrderImplTest {
 		applicationContext = new AnnotationConfigApplicationContext();
 		((AnnotationConfigApplicationContext) applicationContext).register(ConfigurationTest.class);
 		((AnnotationConfigApplicationContext) applicationContext).refresh();
+		dataConfiguration = applicationContext.getBean(DataConfiguration.class);
 		listBitsoResponse = applicationContext.getBean("listTradePayload", List.class);
 		listTopAsksTrades = applicationContext.getBean("topAsks", Set.class);
 		listTopBidsTrades = applicationContext.getBean("topBids", Set.class);
@@ -103,11 +101,12 @@ public class WebSocketOrderImplTest {
 			((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
 			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).totalRecentTrades = 10;
 			webSocketOrder.openConnection();
-//			orderChannel.subscribeBitsoChannel();
-			// diffOrderChannel.subscribeBitsoChannel();
+			orderChannel.subscribeBitsoChannel();
+			 diffOrderChannel.subscribeBitsoChannel();
 			 tradeChannel.subscribeBitsoChannel();
 
 			Runnable task = () -> {
+				
 				System.out.println("display " + totalRecentTrades + " of "
 						+listBitsoResponse.size());
 				listBitsoResponse.forEach(new Consumer<TradePayload>() {
@@ -118,19 +117,22 @@ public class WebSocketOrderImplTest {
 							System.out.println(tradeRestResponse);
 						}
 					}
+				
 				});
+				
 			};
-			task.run();
-			ExecutorService executor = Executors.newSingleThreadExecutor();
-			executor.execute(task);
+//			task.run();
+//			ExecutorService executor = Executors.newSingleThreadExecutor();
+//			executor.execute(task);
 			Thread.sleep(20000);
-			executor.shutdown();
-			executor.awaitTermination(10, TimeUnit.SECONDS);
+//			executor.shutdown();
+//			executor.awaitTermination(10, TimeUnit.SECONDS);
 			webSocketOrder.closeConnection();
-			bitsoWebSocketOrderObserver.getMessageReceived().forEach((s) -> {
-
-			});
+//			bitsoWebSocketOrderObserver.getMessageReceived().forEach((s) -> {
+//
+//			});
 			listBitsoResponse=bitsoWebSocketOrderObserver.getListBitsoRespone();
+//			listBitsoResponse=dataConfiguration.getListTradePayload();
 			assertTrue(listBitsoResponse.size() > 0);
 			end = true;
 		} catch (Exception e) {
