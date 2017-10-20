@@ -6,6 +6,7 @@
 package com.bitso.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,10 +17,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RestResponse {
- 
+
     @JsonProperty("success")
     private Boolean success;
-    @JsonProperty("payload")
-    private RestPayload payload;
     
+    @JsonProperty("payload")
+    private List<RestPayload> payload;
+
 }

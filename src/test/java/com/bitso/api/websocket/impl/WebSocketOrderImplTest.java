@@ -28,6 +28,8 @@ import com.bitso.entity.RestTickerPayload;
 import com.bitso.entity.WebSocketPayload;
 import com.bitso.rest.client.BitsoTicker;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import javax.validation.Payload;
 
 /**
  *
@@ -68,7 +70,9 @@ public class WebSocketOrderImplTest {
         payload.setLow(String.valueOf(Math.random()));
         payload.setVolume(String.valueOf(Math.random()));
         payload.setVwap(String.valueOf(Math.random()));
-        bitsoResponse.setPayload(payload);
+        List<RestPayload> listPayload = new ArrayList<RestPayload>();
+        listPayload.add(payload);
+        bitsoResponse.setPayload(listPayload);
         return bitsoResponse;
     }
     

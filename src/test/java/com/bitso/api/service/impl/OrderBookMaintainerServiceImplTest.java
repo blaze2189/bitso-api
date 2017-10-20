@@ -58,7 +58,7 @@ public class OrderBookMaintainerServiceImplTest {
 			Thread t = new Thread(new OrderMainteiner());
 			t.start();
 			Thread.sleep(20000);
-			t.destroy();
+			t.interrupt();
 			webSocketOrder.closeConnection();
 			end = true;
 		} catch (Exception e) {

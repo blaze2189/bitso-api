@@ -5,8 +5,9 @@
  */
 package com.bitso.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,12 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+ @JsonTypeInfo(use = Id.NONE)
+    @JsonSubTypes({
+        @JsonSubTypes.Type(value = RestOrderBookPayload.class, name = "RetOrderBookPayload"),
+        @JsonSubTypes.Type(value = RestTickerPayload.class, name = "RestTickerPayload")
+    })
 public class RestPayload {
 
+    
 }

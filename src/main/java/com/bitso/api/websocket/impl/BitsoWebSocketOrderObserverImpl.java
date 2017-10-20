@@ -125,9 +125,8 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 						Integer sequence = null;
 						Integer sequenceMessage = diffOrderResponse.getSequence();
 						Integer markerSide = diffOrderResponse.getPayload().get(0).getMarkerSide();
-						RestPayload payload = orderBook.getPayload();
-						RestOrderBookPayload restOrderBookPayload = null;
-						List<TradeInformation> listMarkerSide = null;
+						RestPayload payload = orderBook.getPayload().get(0);
+						RestOrderBookPayload restOrderBookPayload;
 						if (payload instanceof RestOrderBookPayload) {
 							restOrderBookPayload = (RestOrderBookPayload) payload;
 							sequence = restOrderBookPayload.getSequence();

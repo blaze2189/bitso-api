@@ -17,6 +17,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import com.bitso.entity.RestResponse;
 import com.bitso.rest.client.BitsoTicker;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  *
@@ -38,14 +39,23 @@ public class BitsoTickerImpl implements BitsoTicker {
         tokenHeader.add("User-Agent", "curl/7.51.0");
         tokenHeader.add("Accept", "application/json");
         HttpEntity request = new HttpEntity(tokenHeader);
-        ResponseEntity<RestResponse> response;
+        ResponseEntity<String> response;
+//        ResponseEntity<RestResponse> response;
         try {
-            response = restTemplate.exchange(bitsoTicker, HttpMethod.GET, request, RestResponse.class);
-            returnResponse = response.getBody();
+            response = restTemplate.exchange(bitsoTicker, HttpMethod.GET, request, String.class);
+//            response = restTemplate.exchange(bitsoTicker, HttpMethod.GET, request, RestResponse.class);
+//            returnResponse = response.getBody();
+            String stringResponse=response.getBody();
+            ObjectMapper oM = new ObjectMapper();
+            oM.readValue(stringResponse, RestResponse.class);
+            returnResponse=new RestResponse();
         } catch (HttpStatusCodeException e) {
             HttpStatus status = e.getStatusCode();
             e.printStackTrace();
-        } 
+        } catch(Exception e){
+            System.out.println("error");
+            System.out.println(e);
+        }
         return returnResponse;
     }
 
