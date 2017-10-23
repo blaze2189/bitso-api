@@ -101,8 +101,8 @@ public class WebSocketOrderImplTest {
 			((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
 			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).totalRecentTrades = 10;
 			webSocketOrder.openConnection();
-			orderChannel.subscribeBitsoChannel();
-			 diffOrderChannel.subscribeBitsoChannel();
+//			orderChannel.subscribeBitsoChannel();
+//			 diffOrderChannel.subscribeBitsoChannel();
 			 tradeChannel.subscribeBitsoChannel();
 
 			Runnable task = () -> {
@@ -124,7 +124,8 @@ public class WebSocketOrderImplTest {
 //			task.run();
 //			ExecutorService executor = Executors.newSingleThreadExecutor();
 //			executor.execute(task);
-			Thread.sleep(20000);
+//			Thread.sleep(200000000);
+                        while(Math.random()>0){}
 //			executor.shutdown();
 //			executor.awaitTermination(10, TimeUnit.SECONDS);
 			webSocketOrder.closeConnection();

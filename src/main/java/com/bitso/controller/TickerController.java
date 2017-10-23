@@ -75,31 +75,37 @@ public class TickerController implements Initializable {
 		book.setCellValueFactory(new PropertyValueFactory<TradePayload, String>("book"));
 		makerSide.setCellValueFactory(new PropertyValueFactory<TradePayload, String>("makerSide"));
 		amount.setCellValueFactory(new PropertyValueFactory<TradePayload, String>("amount"));
-		try {
-			Thread.sleep(20000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
 		System.out.println("DataConfiguration (TickerController): " + dataConfiguration);
 		List<TradePayload> listBitsoResponse = null;
-		if (dataConfiguration != null)
+		if (dataConfiguration != null){
 			listBitsoResponse = bitsoWebSocketOrderObserver.getListBitsoRespone();
-		if (listBitsoResponse != null && listBitsoResponse.size() > 0)
-			tableView.getItems().setAll(initList());
+                }
+		if (listBitsoResponse != null ){
+//                    listBitsoResponse = initList();
+			tableView.getItems().setAll(listBitsoResponse);
+                        ((ObservableList) listBitsoResponse).addListener(new ListChangeListener<TradePayload>() {
 
-//		((ObservableList) listBitsoResponse).addListener(new ListChangeListener<TradePayload>() {
+                        @Override
+                        public void onChanged(ListChangeListener.Change<? extends TradePayload> c) {
+                            System.out.println("change");
+                            tableView.getItems().forEach(item -> tableView.getItems().remove(item));
+                            tableView.getItems().addAll(c.getList());
+                            tableView.refresh();
+                        }
 //			@Override
 //			public void onChanged(javafx.collections.ListChangeListener.Change<? extends TradePayload> c) {
 //				System.out.println("Changed on " + c);
-////				if (c.next()) {
-////					System.out.println(c.getFrom());
-////				}
-////				tableView.getItems().add(new TradePayload());
-////				tableView.refresh();
+//				if (c.next()) {
+//					System.out.println(c.getFrom());
+//				}
+//				tableView.getItems().add(c);
+//				tableView.refresh();
 //			}
-//
-//		});
+
+		});
+                }
+		
 
 	}
 
@@ -125,8 +131,8 @@ public class TickerController implements Initializable {
 				p.setPrice(String.valueOf(Math.random()));
 				p.setTid(String.valueOf(Math.random()));
 				lP.add(p);
-				tableView.getItems().add(p);
-				 tableView.refresh();
+//				tableView.getItems().add(p);
+//				 tableView.refresh();
 				System.out.println("add");
 			}
 		};
