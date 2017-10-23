@@ -27,7 +27,7 @@ public class WebSocketPayload {
     @JsonProperty(value = "v", required = false)
     private String value;//	String	Value	Minor
     @JsonProperty(value = "t", required = false)
-    private Integer markerSide;//	Number	Maker side, 0 indicates buy 1, indicates sell	-
+    private Integer makerSide;//	Number	Maker side, 0 indicates buy 1, indicates sell	-
     @JsonProperty(value = "mo", required = false)
     private String markerOrderId;//	String	Maker Order ID	-
     @JsonProperty(value = "to", required = false)
@@ -46,7 +46,7 @@ public class WebSocketPayload {
                 append("\na :").append(amount).
                 append("\nr :").append(rate).
                 append("\nv :").append(value).
-                append("\nt :").append(markerSide).
+                append("\nt :").append(makerSide).
                 append("\nmo :").append(markerOrderId).
                 append("\nto :").append(traderOrderID).
                 append("\nd :").append(timeStamp).

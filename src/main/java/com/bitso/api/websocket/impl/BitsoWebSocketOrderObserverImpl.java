@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
 import com.bitso.configuration.DataConfiguration;
+import com.bitso.controller.TickerController;
 import com.bitso.entity.DiffOrdersWocketResponse;
 import com.bitso.entity.OrderBookRestResponse;
 import com.bitso.entity.OrderSocketResponse;
@@ -28,6 +28,8 @@ import com.bitso.rest.client.BitsoTrade;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import javafx.scene.control.TableView;
 
 /**
  *
@@ -54,11 +56,11 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 
 	@Autowired
 	@Qualifier("topBids")
-	private Set<WebSocketPayload> setBids;
+	private List<WebSocketPayload> setBids;
 
 	@Autowired
 	@Qualifier("topAsks")
-	private Set<WebSocketPayload> setAsks;
+	private List<WebSocketPayload> setAsks;
 
 	@Autowired
 	@Qualifier("recentBids")
@@ -102,28 +104,59 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	@Autowired
 	private DataConfiguration dataConfiguration;
 	
+	@Autowired
+	private TickerController tickerController;
+	
 	@Override
 	public void tradeSubscribeAction() {
 		System.out.println("Dataocnfiguration(tradeSubscribe): "+dataConfiguration);
                 bitsoTradeResponse = bitsoTrade.getRecentTrades();
-                List<TradePayload> oldPayload = dataConfiguration.getListTradePayload();
-                if(oldPayload!=null ){
-                    oldPayload.forEach(item -> oldPayload.remove(item));
-                    bitsoTradeResponse.getTradePayload().forEach(item -> oldPayload.add(item));
+                List<TradePayload> oldPayload = bitsoTradeResponse.getTradePayload();
+                System.out.println("oldPayload: "+oldPayload+"\nsize: "+oldPayload.size());
+                oldPayload.forEach(item -> System.out.println(item));
+                TableView<TradePayload> tableView= dataConfiguration.getTradePayloadTableView();
+//                tableView.getItems().addAll(oldPayload);
+//                tableView.refresh();
+//                if(oldPayload!=null ){
+//                    oldPayload.forEach(item -> oldPayload.remove(item));
+//                    bitsoTradeResponse.getTradePayload().forEach(item -> oldPayload.add(item));
+//                }
+                if(tableView!=null) {
+                	List<TradePayload> newPayload= new ArrayList<>();
+//                	AtomicInteger atomicInteger = new AtomicInteger();
+//                	atomicInteger =0;
+//                	int index=0;
+                	 oldPayload.forEach(item->{if(newPayload.size()<=dataConfiguration.getTotalRecentTrades()) {newPayload.add(item);}});
+                	tableView.getItems().setAll(newPayload);
+                	tableView.refresh();
                 }
-//                else
-//		dataConfiguration.setListTradePayload(bitsoTradeResponse.getTradePayload());
-//		listTradePayload = bitsoTradeResponse.getTradePayload();
 	}
 
 	@Override
 	public void orderSubscribeAction(String message) throws JsonParseException, JsonMappingException, IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
-
 		OrderSocketResponse orderSocketResponse = objectMapper.readValue(message, OrderSocketResponse.class);
 		setBids = orderSocketResponse.getOrderPayloadSocketResponse().getBids();
 		setAsks = orderSocketResponse.getOrderPayloadSocketResponse().getAsks();
-		messageReceived.add(message);
+		
+		Integer lastTrade =dataConfiguration.getLastSequenceTrade();
+		Integer topBestTrades = dataConfiguration.getTotalBestTrades();
+		TableView<WebSocketPayload> tableViewBest;
+		
+		List<WebSocketPayload> topBestBids = new ArrayList<>(); 
+		setBids.forEach(bid -> {if(topBestBids.size()<topBestTrades) {topBestBids.add(bid);}});
+		
+		tableViewBest=dataConfiguration.getTableViewBestBids();
+		tableViewBest.getItems().setAll(topBestBids);
+		tableViewBest.refresh();
+		
+		List<WebSocketPayload> topBestAsks = new ArrayList<>(); 
+		setAsks.forEach(ask -> {if(topBestAsks.size()<topBestTrades) {topBestAsks.add(ask);}});
+		tableViewBest=dataConfiguration.getTableViewBestAsks();
+		tableViewBest.getItems().setAll(topBestAsks);
+		tableViewBest.refresh();
+		
+//		messageReceived.add(message);
 	}
 
 	@Override
@@ -131,7 +164,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 		DiffOrdersWocketResponse diffOrderResponse = null;
 		ObjectMapper objectMapper = new ObjectMapper();
 			diffOrderResponse = objectMapper.readValue(message, DiffOrdersWocketResponse.class);
-		Integer markerSide = diffOrderResponse.getPayload().get(0).getMarkerSide();
+		Integer markerSide = diffOrderResponse.getPayload().get(0).getMakerSide();
 		switch (markerSide) {
 		case 1:
 			// bids
@@ -144,6 +177,9 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 		default:
 
 		}
+		
+		
+		
 
 	}
 

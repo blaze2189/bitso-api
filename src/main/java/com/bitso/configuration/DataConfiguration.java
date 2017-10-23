@@ -19,14 +19,23 @@ import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
 
 import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import lombok.Getter;
 import lombok.Setter;
 
 @Component
-@Scope("singleton")
 @Getter
 @Setter
 public class DataConfiguration {
+	
+	private TableView<TradePayload> tradePayloadTableView;
+	private TableView<WebSocketPayload> tableViewBestAsks;
+	private TableView<WebSocketPayload> tableViewBestBids;
+	
+	private Integer totalRecentTrades;
+	private Integer totalBestTrades;
 	
 	@Autowired
 	private PayloadSocketComparator payloadSocketComparator;
@@ -41,6 +50,7 @@ public class DataConfiguration {
 		return 0;
 	}
 
+	private Integer lastSequenceTrade;
 	@Bean
 	private TradeRestResponse tradeRestResponse() {
 		return new TradeRestResponse();
@@ -59,13 +69,15 @@ public class DataConfiguration {
 	}	
 	
 	@Bean(name = "topAsks")
-	public Set<WebSocketPayload> listTopAsk() {
-		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
+	public List<WebSocketPayload> listTopAsk() {
+		return Collections.synchronizedList(new ArrayList<>());
+//		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 
 	@Bean(name = "topBids")
-	public Set<WebSocketPayload> listTopBid() {
-		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
+	public List<WebSocketPayload> listTopBid() {
+		return Collections.synchronizedList(new ArrayList<>());
+//		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 
 	@Bean(name = "orderBook")
@@ -82,5 +94,11 @@ public class DataConfiguration {
 	public List<DiffOrdersWocketResponse> recentAsks() {
 		return Collections.synchronizedList(new ArrayList<>());
 	}
+	
+//	@FXML
+//	private TableView<TradePayload> tableView;
+//	private TableColumn<TradePayload, String> book;
+//	private TableColumn<TradePayload, String> makerSide;
+//	private TableColumn<TradePayload, String> amount;
 
 }

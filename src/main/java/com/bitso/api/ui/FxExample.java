@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,7 @@ public class FxExample extends Application {
 		InitApp.getInstance().stop();
 	}
 	
-	@Autowired
+//	@Autowired
 	private DataConfiguration data;
 	
 	@Override
@@ -36,9 +35,10 @@ public class FxExample extends Application {
 		FileInputStream fxmlStream = new FileInputStream(path.toAbsolutePath().toFile());
 		ApplicationContext ac = InitApp.getInstance().getApplicationContext();
 		
-		System.out.println("data config "+data);
-		DataConfiguration data=ac.getBean(DataConfiguration.class);
-		System.out.println("data config2 "+data);
+		data=ac.getBean(DataConfiguration.class);
+		data.setTotalRecentTrades(10);
+		data.setTotalBestTrades(10);
+//		data.setTotalRecentTraiding(5);
 		VBox root = (VBox) loader.load(fxmlStream);
 		Scene scene = new Scene(root);
 		stage.setScene(scene);

@@ -5,7 +5,7 @@
  */
 package com.bitso.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,9 +21,9 @@ import lombok.Setter;
 public class OrderPayloadSocketResponse {
     
     @JsonProperty(value="bids",required=true)
-    private Set<WebSocketPayload> bids;
+    private List<WebSocketPayload> bids;
     @JsonProperty(value="asks",required=true)
-    private Set<WebSocketPayload> asks;
+    private List<WebSocketPayload> asks;
 
     @Override
     public String toString() {

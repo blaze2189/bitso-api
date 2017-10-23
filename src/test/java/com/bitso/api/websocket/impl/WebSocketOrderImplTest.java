@@ -124,8 +124,8 @@ public class WebSocketOrderImplTest {
 //			task.run();
 //			ExecutorService executor = Executors.newSingleThreadExecutor();
 //			executor.execute(task);
-//			Thread.sleep(200000000);
-                        while(Math.random()>0){}
+			Thread.sleep(20000);
+//                        while(Math.random()>0){}
 //			executor.shutdown();
 //			executor.awaitTermination(10, TimeUnit.SECONDS);
 			webSocketOrder.closeConnection();
