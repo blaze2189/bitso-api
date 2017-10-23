@@ -105,8 +105,14 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	@Override
 	public void tradeSubscribeAction() {
 		System.out.println("Dataocnfiguration(tradeSubscribe): "+dataConfiguration);
-		bitsoTradeResponse = bitsoTrade.getRecentTrades();
-		dataConfiguration.setListTradePayload(bitsoTradeResponse.getTradePayload());
+                bitsoTradeResponse = bitsoTrade.getRecentTrades();
+                List<TradePayload> oldPayload = dataConfiguration.getListTradePayload();
+                if(oldPayload!=null ){
+                    oldPayload.forEach(item -> oldPayload.remove(item));
+                    bitsoTradeResponse.getTradePayload().forEach(item -> oldPayload.add(item));
+                }
+//                else
+//		dataConfiguration.setListTradePayload(bitsoTradeResponse.getTradePayload());
 //		listTradePayload = bitsoTradeResponse.getTradePayload();
 	}
 

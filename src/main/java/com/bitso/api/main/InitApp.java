@@ -58,8 +58,8 @@ public class InitApp {
 						.getBean(BitsoWebSocketOrderObserverImpl.class);
 				((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
 				webSocketOrder.openConnection();
-				orderChannel.subscribeBitsoChannel();
-				 diffOrderChannel.subscribeBitsoChannel();
+//				orderChannel.subscribeBitsoChannel();
+//				 diffOrderChannel.subscribeBitsoChannel();
 				 tradeChannel.subscribeBitsoChannel();
 				 Thread.sleep(20000);
 			} catch (Exception e) {
