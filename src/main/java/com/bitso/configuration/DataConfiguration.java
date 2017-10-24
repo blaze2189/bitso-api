@@ -69,15 +69,15 @@ public class DataConfiguration {
 	}	
 	
 	@Bean(name = "topAsks")
-	public List<WebSocketPayload> listTopAsk() {
-		return Collections.synchronizedList(new ArrayList<>());
-//		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
+	public Set<WebSocketPayload> listTopAsk() {
+//		return Collections.synchronizedList(new ArrayList<>());
+		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 
 	@Bean(name = "topBids")
-	public List<WebSocketPayload> listTopBid() {
-		return Collections.synchronizedList(new ArrayList<>());
-//		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
+	public Set<WebSocketPayload> listTopBid() {
+//		return Collections.synchronizedList(new ArrayList<>());
+		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 
 	@Bean(name = "orderBook")

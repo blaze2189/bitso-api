@@ -28,6 +28,7 @@ import com.bitso.rest.client.BitsoTrade;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Set;
 
 import javafx.scene.control.TableView;
 
@@ -56,11 +57,11 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 
 	@Autowired
 	@Qualifier("topBids")
-	private List<WebSocketPayload> setBids;
+	private Set<WebSocketPayload> setBids;
 
 	@Autowired
 	@Qualifier("topAsks")
-	private List<WebSocketPayload> setAsks;
+	private Set<WebSocketPayload> setAsks;
 
 	@Autowired
 	@Qualifier("recentBids")
@@ -129,6 +130,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
                 	 oldPayload.forEach(item->{if(newPayload.size()<=dataConfiguration.getTotalRecentTrades()) {newPayload.add(item);}});
                 	tableView.getItems().setAll(newPayload);
                 	tableView.refresh();
+                        
                 }
 	}
 
