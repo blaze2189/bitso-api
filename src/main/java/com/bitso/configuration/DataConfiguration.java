@@ -8,7 +8,6 @@ import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.bitso.api.util.PayloadSocketComparator;
@@ -19,8 +18,6 @@ import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
 
 import javafx.collections.FXCollections;
-import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import lombok.Getter;
 import lombok.Setter;
@@ -29,14 +26,17 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DataConfiguration {
-	
+
 	private TableView<TradePayload> tradePayloadTableView;
 	private TableView<WebSocketPayload> tableViewBestAsks;
 	private TableView<WebSocketPayload> tableViewBestBids;
-	
+
+	private Integer upTicketsStrategy;
+	private Integer downTicketsStrategy;
+
 	private Integer totalRecentTrades;
 	private Integer totalBestTrades;
-	
+
 	@Autowired
 	private PayloadSocketComparator payloadSocketComparator;
 
@@ -51,32 +51,35 @@ public class DataConfiguration {
 	}
 
 	private Integer lastSequenceTrade;
+
 	@Bean
 	private TradeRestResponse tradeRestResponse() {
 		return new TradeRestResponse();
 	}
-	
+
 	@Bean(name = "lastSequenceTrade")
 	public Integer lastSequenceTrade() {
 		return 0;
 	}
 
-//	private List<TradePayload> listTradePayload =Collections.synchronizedList(new ArrayList<TradePayload>());
-	private List<TradePayload> listTradePayload =FXCollections.observableArrayList();
+	// private List<TradePayload> listTradePayload =Collections.synchronizedList(new
+	// ArrayList<TradePayload>());
+	private List<TradePayload> listTradePayload = FXCollections.observableArrayList();
+
 	@Bean(name = "listTradePayload")
 	public List<TradePayload> listTradePayload() {
 		return listTradePayload;
-	}	
-	
+	}
+
 	@Bean(name = "topAsks")
 	public Set<WebSocketPayload> listTopAsk() {
-//		return Collections.synchronizedList(new ArrayList<>());
+		// return Collections.synchronizedList(new ArrayList<>());
 		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 
 	@Bean(name = "topBids")
 	public Set<WebSocketPayload> listTopBid() {
-//		return Collections.synchronizedList(new ArrayList<>());
+		// return Collections.synchronizedList(new ArrayList<>());
 		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 
@@ -94,11 +97,11 @@ public class DataConfiguration {
 	public List<DiffOrdersWocketResponse> recentAsks() {
 		return Collections.synchronizedList(new ArrayList<>());
 	}
-	
-//	@FXML
-//	private TableView<TradePayload> tableView;
-//	private TableColumn<TradePayload, String> book;
-//	private TableColumn<TradePayload, String> makerSide;
-//	private TableColumn<TradePayload, String> amount;
+
+	// @FXML
+	// private TableView<TradePayload> tableView;
+	// private TableColumn<TradePayload, String> book;
+	// private TableColumn<TradePayload, String> makerSide;
+	// private TableColumn<TradePayload, String> amount;
 
 }

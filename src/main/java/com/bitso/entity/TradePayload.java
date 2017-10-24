@@ -23,5 +23,7 @@ public class TradePayload {
 	private String price;
 	@JsonProperty("tid")
 	private String tid;
+	@JsonProperty(value="real",required=false)
+	private boolean real;
 
 }

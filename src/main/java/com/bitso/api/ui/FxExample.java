@@ -38,6 +38,8 @@ public class FxExample extends Application {
 		data=ac.getBean(DataConfiguration.class);
 		data.setTotalRecentTrades(10);
 		data.setTotalBestTrades(10);
+		data.setUpTicketsStrategy(1);
+		data.setDownTicketsStrategy(1);
 //		data.setTotalRecentTraiding(5);
 		VBox root = (VBox) loader.load(fxmlStream);
 		Scene scene = new Scene(root);

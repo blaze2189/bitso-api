@@ -7,9 +7,12 @@ package com.bitso.api.websocket.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,7 +31,6 @@ import com.bitso.rest.client.BitsoTrade;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Set;
 
 import javafx.scene.control.TableView;
 
@@ -50,9 +52,9 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	protected Integer totalRecentTrades;
 
 	private List<String> messageReceived;
-//	@Autowired
-//	@Qualifier("tradesList")
-//	private List<TradeRestResponse> listBitsoResponse;
+	// @Autowired
+	// @Qualifier("tradesList")
+	// private List<TradeRestResponse> listBitsoResponse;
 	private Boolean isConnected;
 
 	@Autowired
@@ -99,39 +101,72 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	@Qualifier("lastSequenceTrade")
 	public Integer lastSequenceTrade;
 
-//	@Autowired
-//	List<TradePayload> listTradePayload;
-	
+	// @Autowired
+	// List<TradePayload> listTradePayload;
+
 	@Autowired
 	private DataConfiguration dataConfiguration;
-	
+
 	@Autowired
 	private TickerController tickerController;
-	
+
 	@Override
 	public void tradeSubscribeAction() {
-		System.out.println("Dataocnfiguration(tradeSubscribe): "+dataConfiguration);
-                bitsoTradeResponse = bitsoTrade.getRecentTrades();
-                List<TradePayload> oldPayload = bitsoTradeResponse.getTradePayload();
-                System.out.println("oldPayload: "+oldPayload+"\nsize: "+oldPayload.size());
-                oldPayload.forEach(item -> System.out.println(item));
-                TableView<TradePayload> tableView= dataConfiguration.getTradePayloadTableView();
-//                tableView.getItems().addAll(oldPayload);
-//                tableView.refresh();
-//                if(oldPayload!=null ){
-//                    oldPayload.forEach(item -> oldPayload.remove(item));
-//                    bitsoTradeResponse.getTradePayload().forEach(item -> oldPayload.add(item));
-//                }
-                if(tableView!=null) {
-                	List<TradePayload> newPayload= new ArrayList<>();
-//                	AtomicInteger atomicInteger = new AtomicInteger();
-//                	atomicInteger =0;
-//                	int index=0;
-                	 oldPayload.forEach(item->{if(newPayload.size()<=dataConfiguration.getTotalRecentTrades()) {newPayload.add(item);}});
-                	tableView.getItems().setAll(newPayload);
-                	tableView.refresh();
-                        
-                }
+		System.out.println("Dataocnfiguration(tradeSubscribe): " + dataConfiguration);
+		bitsoTradeResponse = bitsoTrade.getRecentTrades();
+		List<TradePayload> oldPayload = bitsoTradeResponse.getTradePayload();
+		System.out.println("oldPayload: " + oldPayload + "\nsize: " + oldPayload.size());
+		oldPayload.forEach(item -> System.out.println(item));
+		TableView<TradePayload> tableView = dataConfiguration.getTradePayloadTableView();
+		int upTicketsLimit = dataConfiguration.getUpTicketsStrategy();
+		int downTicketsLimit = dataConfiguration.getDownTicketsStrategy();
+		AtomicInteger counterUpTickets = new AtomicInteger(0);
+		AtomicInteger counterDownTickets = new AtomicInteger(0);
+		if (tableView != null) {
+			List<TradePayload> newPayload = new ArrayList<>();
+			oldPayload.forEach(item -> {
+				if (newPayload.size() <= dataConfiguration.getTotalRecentTrades()) {
+					int lastItem = newPayload.size() - 1;
+					if (lastItem > 0) {
+						TradePayload previousPayload = newPayload.get(lastItem);
+						Double itemPrice = Double.valueOf(item.getPrice());
+						Double lastPrice = Double.valueOf(previousPayload.getPrice());
+						
+						if (itemPrice < lastPrice) {
+							counterDownTickets.set(0);
+							if (counterUpTickets.getAndIncrement() >= upTicketsLimit) {
+								TradePayload falseTrade = new TradePayload();
+								falseTrade.setBook("btc_mxn");
+								falseTrade.setCreatedAt(new Date());
+								falseTrade.setAmount("1");
+								falseTrade.setMakerSide("buy");
+								falseTrade.setPrice(previousPayload.getPrice());
+								falseTrade.setTid("?????");
+								falseTrade.setReal(false);
+								newPayload.add(falseTrade);
+							}
+						} else if (itemPrice > lastPrice) {
+							counterUpTickets.set(0);
+							if (counterDownTickets.getAndIncrement() >= downTicketsLimit) {
+								TradePayload falseTrade = new TradePayload();
+								falseTrade.setBook("btc_mxn");
+								falseTrade.setCreatedAt(new Date());
+								falseTrade.setAmount("1");
+								falseTrade.setMakerSide("sell");
+								falseTrade.setPrice(previousPayload.getPrice());
+								falseTrade.setTid("?????");
+								falseTrade.setReal(false);
+								newPayload.add(falseTrade);
+							}
+						}
+					}
+					item.setReal(true);
+					newPayload.add(item);
+				}
+			});
+			tableView.getItems().setAll(newPayload);
+			tableView.refresh();
+		}
 	}
 
 	@Override
@@ -140,32 +175,40 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 		OrderSocketResponse orderSocketResponse = objectMapper.readValue(message, OrderSocketResponse.class);
 		setBids = orderSocketResponse.getOrderPayloadSocketResponse().getBids();
 		setAsks = orderSocketResponse.getOrderPayloadSocketResponse().getAsks();
-		
-		Integer lastTrade =dataConfiguration.getLastSequenceTrade();
+
+		Integer lastTrade = dataConfiguration.getLastSequenceTrade();
 		Integer topBestTrades = dataConfiguration.getTotalBestTrades();
 		TableView<WebSocketPayload> tableViewBest;
-		
-		List<WebSocketPayload> topBestBids = new ArrayList<>(); 
-		setBids.forEach(bid -> {if(topBestBids.size()<topBestTrades) {topBestBids.add(bid);}});
-		
-		tableViewBest=dataConfiguration.getTableViewBestBids();
+
+		List<WebSocketPayload> topBestBids = new ArrayList<>();
+		setBids.forEach(bid -> {
+			if (topBestBids.size() < topBestTrades) {
+				topBestBids.add(bid);
+			}
+		});
+
+		tableViewBest = dataConfiguration.getTableViewBestBids();
 		tableViewBest.getItems().setAll(topBestBids);
 		tableViewBest.refresh();
-		
-		List<WebSocketPayload> topBestAsks = new ArrayList<>(); 
-		setAsks.forEach(ask -> {if(topBestAsks.size()<topBestTrades) {topBestAsks.add(ask);}});
-		tableViewBest=dataConfiguration.getTableViewBestAsks();
+
+		List<WebSocketPayload> topBestAsks = new ArrayList<>();
+		setAsks.forEach(ask -> {
+			if (topBestAsks.size() < topBestTrades) {
+				topBestAsks.add(ask);
+			}
+		});
+		tableViewBest = dataConfiguration.getTableViewBestAsks();
 		tableViewBest.getItems().setAll(topBestAsks);
 		tableViewBest.refresh();
-		
-//		messageReceived.add(message);
+
+		// messageReceived.add(message);
 	}
 
 	@Override
-	public void diffOrderSubscribeAction(String message)throws JsonParseException, JsonMappingException, IOException {
+	public void diffOrderSubscribeAction(String message) throws JsonParseException, JsonMappingException, IOException {
 		DiffOrdersWocketResponse diffOrderResponse = null;
 		ObjectMapper objectMapper = new ObjectMapper();
-			diffOrderResponse = objectMapper.readValue(message, DiffOrdersWocketResponse.class);
+		diffOrderResponse = objectMapper.readValue(message, DiffOrdersWocketResponse.class);
 		Integer markerSide = diffOrderResponse.getPayload().get(0).getMakerSide();
 		switch (markerSide) {
 		case 1:
@@ -179,9 +222,6 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 		default:
 
 		}
-		
-		
-		
 
 	}
 
@@ -214,10 +254,15 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			} 
+			} catch (Exception e) {
+				System.out.println("--------------------------------------------------");
+				System.out.println("error " + e);
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+				System.out.println("--------------------------------------------------");
+			}
 
-		}
-		else if (arg instanceof Boolean) {
+		} else if (arg instanceof Boolean) {
 			isConnected = (Boolean) arg;
 		}
 	}

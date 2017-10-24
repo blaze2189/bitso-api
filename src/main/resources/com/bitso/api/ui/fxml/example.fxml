@@ -27,7 +27,7 @@
     <Label fx:id="outputLbl" alignment="CENTER_LEFT" cache="true" cacheHint="SCALE" prefHeight="30.0" prefWidth="200.0" text="Your Input:" textAlignment="LEFT" />
     <TextArea fx:id="outputText" prefHeight="100.0" prefWidth="200.0" wrapText="true" />
   </children-->
-  <Label alignment="CENTER_LEFT" text="Recent Tradess"/>
+  <Label alignment="CENTER_LEFT" text="Recent Trades"/>
   <TableView fx:id="tradePayloadTableView">
     <columns>
       <TableColumn text="Book" fx:id="book">
@@ -36,16 +36,28 @@
       </TableColumn>
       <TableColumn text="Maker Side" fx:id="makerSide">
         <cellValueFactory><PropertyValueFactory property="makerSide" />
-        </cellValueFactory>
+      </cellValueFactory>
       </TableColumn>
       <TableColumn text="Amount" fx:id="amount">
         <cellValueFactory><PropertyValueFactory property="amount" />
         </cellValueFactory>
       </TableColumn>
+      <TableColumn text="Tid" fx:id="tid">
+        <cellValueFactory><PropertyValueFactory property="tid" />
+        </cellValueFactory>
+      </TableColumn>
+      <TableColumn text="Price" fx:id="price">
+        <cellValueFactory><PropertyValueFactory property="price" />
+        </cellValueFactory>
+      </TableColumn>
+      <TableColumn text="Date" fx:id="createdAt">
+        <cellValueFactory><PropertyValueFactory property="createdAt" />
+        </cellValueFactory>
+      </TableColumn>
     </columns>
    </TableView>
 
-   <Label alignment="CENTER_LEFT" text="Best Offers"/>
+   <!--Label alignment="CENTER_LEFT" text="Best Offers"/>
    <TableView fx:id="bestAsksTableView">
      <columns>
        <TableColumn text="identifier" fx:id="identifier">
@@ -54,7 +66,7 @@
        </TableColumn>
        <TableColumn text="Maker Side" fx:id="makerSide">
          <cellValueFactory><PropertyValueFactory property="makerSide" />
-         </cellValueFactory>
+       </cellValueFactory>
        </TableColumn>
        <TableColumn text="Amount" fx:id="amount">
          <cellValueFactory><PropertyValueFactory property="amount" />
@@ -79,6 +91,6 @@
           </cellValueFactory>
         </TableColumn>
       </columns>
-     </TableView>
+    </TableView-->
 
 </VBox>
