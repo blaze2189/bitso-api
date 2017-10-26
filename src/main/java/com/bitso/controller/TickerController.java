@@ -15,7 +15,8 @@ import org.springframework.stereotype.Component;
 
 import com.bitso.api.main.InitApp;
 import com.bitso.api.table.model.TradePayloadModel;
-import com.bitso.api.websocket.BitsoWebSocketObserver;
+import com.bitso.api.table.model.WebSocketPayloadModel;
+import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
 import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.TradePayload;
 import com.bitso.entity.WebSocketPayload;
@@ -23,7 +24,6 @@ import com.bitso.rest.client.BitsoTicker;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -56,6 +56,20 @@ public class TickerController implements Initializable {
 	@FXML
 	private TableColumn<TradePayload, Object> createdAt;
 
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestAsksId;
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestAsksMakerSide;
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestAsksAmount;
+
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestBidsIdentifier;
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestBidsMakerSide;
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestBidsAmount;
+
 	@Autowired
 	private BitsoTicker bitsoTicker;
 
@@ -72,13 +86,23 @@ public class TickerController implements Initializable {
 		ApplicationContext applicationContext = InitApp.getInstance().getApplicationContext();
 		dataConfiguration = applicationContext.getBean(DataConfiguration.class);
 		bitsoWebSocketOrderObserver = applicationContext.getBean(BitsoWebSocketObserver.class);
-	
+
 		price.setCellFactory(column -> new TradePayloadModel());
 		makerSide.setCellFactory(column -> new TradePayloadModel());
 		book.setCellFactory(column -> new TradePayloadModel());
 		amount.setCellFactory(column -> new TradePayloadModel());
 		tid.setCellFactory(column -> new TradePayloadModel());
 		createdAt.setCellFactory(column -> new TradePayloadModel());
+
+		bestAsksId.setCellFactory(column -> new WebSocketPayloadModel());
+//		bestAsksMakerSide.setCellFactory(column -> new WebSocketPayloadModel());
+		bestAsksAmount.setCellFactory(column -> new WebSocketPayloadModel());
+
+		bestBidsIdentifier.setCellFactory(column -> new WebSocketPayloadModel());
+//		bestBidsMakerSide.setCellFactory(column -> new WebSocketPayloadModel());
+		bestBidsAmount.setCellFactory(column -> new WebSocketPayloadModel());
+
+
 
 		List<TradePayload> listBitsoResponse = null;
 		if (tradePayloadTableView != null) {
