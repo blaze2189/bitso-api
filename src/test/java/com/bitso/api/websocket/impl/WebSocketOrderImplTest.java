@@ -21,6 +21,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.bitso.api.main.test.ConfigurationTest;
+import com.bitso.api.service.TradeService;
+import com.bitso.api.service.impl.TradeServiceImpl;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
 import com.bitso.api.websocket.WebSocketConnection;
@@ -38,7 +40,9 @@ public class WebSocketOrderImplTest {
 
 	ApplicationContext applicationContext;
 
-	BitsoTrade bitsoTrade = mock(BitsoTrade.class);
+	private BitsoTrade bitsoTrade = mock(BitsoTrade.class);
+	
+	private TradeService tradeService = mock(TradeService.class);
 
 	private List<TradePayload> listBitsoResponse;
 
@@ -96,7 +100,8 @@ public class WebSocketOrderImplTest {
 		try (WebSocketConnection webSocketOrder = applicationContext.getBean(WebSocketConnectionImpl.class)) {
 			BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver = applicationContext
 					.getBean(BitsoWebSocketOrderObserverImpl.class);
-			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).bitsoTrade = this.bitsoTrade;
+			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).tradeService = this.tradeService;
+//			((TradeServiceImpl)tradeService).bitsoTrade = this.bitsoTrade;
 			when(bitsoTrade.getRecentTrades()).thenReturn(createBitsoResponse());
 			((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
 			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).totalRecentTrades = 10;
@@ -132,7 +137,7 @@ public class WebSocketOrderImplTest {
 //			bitsoWebSocketOrderObserver.getMessageReceived().forEach((s) -> {
 //
 //			});
-			listBitsoResponse=bitsoWebSocketOrderObserver.getListBitsoRespone();
+			listBitsoResponse=dataConfiguration.getListTradePayload();
 //			listBitsoResponse=dataConfiguration.getListTradePayload();
 //			assertTrue(listBitsoResponse.size() > 0);
 			end = true;

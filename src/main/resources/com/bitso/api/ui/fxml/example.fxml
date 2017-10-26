@@ -30,6 +30,10 @@
   <Label alignment="CENTER_LEFT" text="Recent Trades"/>
   <TableView fx:id="tradePayloadTableView">
     <columns>
+      <TableColumn text="Tid" fx:id="tid">
+        <cellValueFactory><PropertyValueFactory property="tid" />
+        </cellValueFactory>
+      </TableColumn>
       <TableColumn text="Book" fx:id="book">
         <cellValueFactory><PropertyValueFactory property="book" />
         </cellValueFactory>
@@ -40,10 +44,6 @@
       </TableColumn>
       <TableColumn text="Amount" fx:id="amount">
         <cellValueFactory><PropertyValueFactory property="amount" />
-        </cellValueFactory>
-      </TableColumn>
-      <TableColumn text="Tid" fx:id="tid">
-        <cellValueFactory><PropertyValueFactory property="tid" />
         </cellValueFactory>
       </TableColumn>
       <TableColumn text="Price" fx:id="price">
@@ -57,18 +57,18 @@
     </columns>
    </TableView>
 
-   <!--Label alignment="CENTER_LEFT" text="Best Offers"/>
+   <Label alignment="CENTER_LEFT" text="Best Offers"/>
    <TableView fx:id="bestAsksTableView">
      <columns>
-       <TableColumn text="identifier" fx:id="identifier">
+       <TableColumn text="identifier" fx:id="bestAsksId">
          <cellValueFactory><PropertyValueFactory property="identifier" />
          </cellValueFactory>
        </TableColumn>
-       <TableColumn text="Maker Side" fx:id="makerSide">
+       <TableColumn text="Maker Side" fx:id="bestAsksMakerSide">
          <cellValueFactory><PropertyValueFactory property="makerSide" />
        </cellValueFactory>
        </TableColumn>
-       <TableColumn text="Amount" fx:id="amount">
+       <TableColumn text="Amount" fx:id="bestAsksAmount">
          <cellValueFactory><PropertyValueFactory property="amount" />
          </cellValueFactory>
        </TableColumn>
@@ -78,19 +78,19 @@
     <Label alignment="CENTER_LEFT" text="Best Bids"/>
     <TableView fx:id="bestBidsTableView">
       <columns>
-        <TableColumn text="identifier" fx:id="identifier">
+        <TableColumn text="identifier" fx:id="bestBidsIdentifier">
           <cellValueFactory><PropertyValueFactory property="identifier" />
           </cellValueFactory>
         </TableColumn>
-        <TableColumn text="Maker Side" fx:id="makerSide">
+        <TableColumn text="Maker Side" fx:id="bestBidsMakerSide">
           <cellValueFactory><PropertyValueFactory property="makerSide" />
           </cellValueFactory>
         </TableColumn>
-        <TableColumn text="Amount" fx:id="amount">
+        <TableColumn text="Amount" fx:id="bestBidsAmount">
           <cellValueFactory><PropertyValueFactory property="amount" />
           </cellValueFactory>
         </TableColumn>
       </columns>
-    </TableView-->
+    </TableView>
 
 </VBox>

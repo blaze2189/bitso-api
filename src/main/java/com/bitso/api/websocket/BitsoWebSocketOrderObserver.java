@@ -19,10 +19,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  */
 public interface BitsoWebSocketOrderObserver extends Observer {
     
-    List<String> getMessageReceived();
-    List<TradePayload> getListBitsoRespone();
     Boolean isConnected();
-     void tradeSubscribeAction();
+     void tradeSubscribeAction()  throws JsonParseException, JsonMappingException, IOException;
      void orderSubscribeAction(String message)throws JsonParseException, JsonMappingException, IOException;
      void diffOrderSubscribeAction(String message)throws JsonParseException, JsonMappingException, IOException;
     

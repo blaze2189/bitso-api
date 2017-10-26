@@ -7,25 +7,22 @@ package com.bitso.api.websocket.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import com.bitso.api.service.TradeService;
 import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
 import com.bitso.configuration.DataConfiguration;
-import com.bitso.controller.TickerController;
 import com.bitso.entity.DiffOrdersWocketResponse;
 import com.bitso.entity.OrderBookRestResponse;
 import com.bitso.entity.OrderSocketResponse;
 import com.bitso.entity.TradePayload;
-import com.bitso.entity.TradeRestResponse;
 import com.bitso.entity.WebSocketPayload;
 import com.bitso.rest.client.BitsoTrade;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -41,20 +38,16 @@ import javafx.scene.control.TableView;
 @Component
 public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObserver {
 
-	@Autowired
-	protected BitsoTrade bitsoTrade;
+//	@Autowired
+//	protected BitsoTrade bitsoTrade;
 
-	@Autowired
-	protected TradeRestResponse bitsoTradeResponse;
+//	@Autowired
+//	protected TradeRestResponse bitsoTradeResponse;
 
 	@Autowired
 	@Qualifier("totalRecentTrades")
 	protected Integer totalRecentTrades;
 
-	private List<String> messageReceived;
-	// @Autowired
-	// @Qualifier("tradesList")
-	// private List<TradeRestResponse> listBitsoResponse;
 	private Boolean isConnected;
 
 	@Autowired
@@ -74,18 +67,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	private List<DiffOrdersWocketResponse> recentAsks;
 
 	{
-		messageReceived = new ArrayList<>();
 		isConnected = false;
-	}
-
-	@Override
-	public List<String> getMessageReceived() {
-		return messageReceived;
-	}
-
-	@Override
-	public List<TradePayload> getListBitsoRespone() {
-		return dataConfiguration.getListTradePayload();
 	}
 
 	@Override
@@ -101,70 +83,19 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 	@Qualifier("lastSequenceTrade")
 	public Integer lastSequenceTrade;
 
-	// @Autowired
-	// List<TradePayload> listTradePayload;
-
 	@Autowired
 	private DataConfiguration dataConfiguration;
-
+	
 	@Autowired
-	private TickerController tickerController;
+	protected TradeService tradeService;
 
 	@Override
-	public void tradeSubscribeAction() {
-		System.out.println("Dataocnfiguration(tradeSubscribe): " + dataConfiguration);
-		bitsoTradeResponse = bitsoTrade.getRecentTrades();
-		List<TradePayload> oldPayload = bitsoTradeResponse.getTradePayload();
-		System.out.println("oldPayload: " + oldPayload + "\nsize: " + oldPayload.size());
-		oldPayload.forEach(item -> System.out.println(item));
+	public void tradeSubscribeAction()  throws JsonParseException, JsonMappingException, IOException {
 		TableView<TradePayload> tableView = dataConfiguration.getTradePayloadTableView();
-		int upTicketsLimit = dataConfiguration.getUpTicketsStrategy();
-		int downTicketsLimit = dataConfiguration.getDownTicketsStrategy();
-		AtomicInteger counterUpTickets = new AtomicInteger(0);
-		AtomicInteger counterDownTickets = new AtomicInteger(0);
-		if (tableView != null) {
-			List<TradePayload> newPayload = new ArrayList<>();
-			oldPayload.forEach(item -> {
-				if (newPayload.size() <= dataConfiguration.getTotalRecentTrades()) {
-					int lastItem = newPayload.size() - 1;
-					if (lastItem > 0) {
-						TradePayload previousPayload = newPayload.get(lastItem);
-						Double itemPrice = Double.valueOf(item.getPrice());
-						Double lastPrice = Double.valueOf(previousPayload.getPrice());
-						
-						if (itemPrice < lastPrice) {
-							counterDownTickets.set(0);
-							if (counterUpTickets.getAndIncrement() >= upTicketsLimit) {
-								TradePayload falseTrade = new TradePayload();
-								falseTrade.setBook("btc_mxn");
-								falseTrade.setCreatedAt(new Date());
-								falseTrade.setAmount("1");
-								falseTrade.setMakerSide("buy");
-								falseTrade.setPrice(previousPayload.getPrice());
-								falseTrade.setTid("?????");
-								falseTrade.setReal(false);
-								newPayload.add(falseTrade);
-							}
-						} else if (itemPrice > lastPrice) {
-							counterUpTickets.set(0);
-							if (counterDownTickets.getAndIncrement() >= downTicketsLimit) {
-								TradePayload falseTrade = new TradePayload();
-								falseTrade.setBook("btc_mxn");
-								falseTrade.setCreatedAt(new Date());
-								falseTrade.setAmount("1");
-								falseTrade.setMakerSide("sell");
-								falseTrade.setPrice(previousPayload.getPrice());
-								falseTrade.setTid("?????");
-								falseTrade.setReal(false);
-								newPayload.add(falseTrade);
-							}
-						}
-					}
-					item.setReal(true);
-					newPayload.add(item);
-				}
-			});
-			tableView.getItems().setAll(newPayload);
+		Set<TradePayload> setPayload;
+		if(tableView!=null) {
+			setPayload = tradeService.getNRecentTrades();
+			tableView.getItems().setAll(setPayload);
 			tableView.refresh();
 		}
 	}
@@ -227,7 +158,6 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 
 	@Override
 	public void update(Observable o, Object arg) {
-		System.out.println("message " + arg);
 		if (arg instanceof String) {
 			String message = (String) arg;
 

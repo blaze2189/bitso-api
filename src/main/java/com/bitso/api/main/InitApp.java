@@ -17,7 +17,7 @@ import com.bitso.api.websocket.impl.WebSocketConnectionImpl;
 import lombok.Getter;
 
 @ComponentScan({ "com.bitso.api.websocket.impl", "com.bitso.configuration", "com.bitso.api.util",
-	"com.bitso.api.service.impl","com.bitso.api.ui", "com.bitso.controller", "com.bitso.rest.client.impl" })
+	"com.bitso.api.service.impl", "com.bitso.api.table.model","com.bitso.controller", "com.bitso.rest.client.impl" })
 @PropertySource("classpath:application.properties")
 @Getter
 public class InitApp {
@@ -58,8 +58,8 @@ public class InitApp {
 						.getBean(BitsoWebSocketOrderObserverImpl.class);
 				((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
 				webSocketOrder.openConnection();
-//				orderChannel.subscribeBitsoChannel();
-//				 diffOrderChannel.subscribeBitsoChannel();
+				orderChannel.subscribeBitsoChannel();
+				 diffOrderChannel.subscribeBitsoChannel();
 				 tradeChannel.subscribeBitsoChannel();
 //				 Thread.sleep(20000);
 			} catch (Exception e) {

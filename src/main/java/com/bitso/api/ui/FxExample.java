@@ -23,9 +23,9 @@ public class FxExample extends Application {
 	@Override
 	public void stop() throws Exception {
 		InitApp.getInstance().stop();
+	
 	}
 	
-//	@Autowired
 	private DataConfiguration data;
 	
 	@Override
@@ -36,11 +36,11 @@ public class FxExample extends Application {
 		ApplicationContext ac = InitApp.getInstance().getApplicationContext();
 		
 		data=ac.getBean(DataConfiguration.class);
-		data.setTotalRecentTrades(10);
-		data.setTotalBestTrades(10);
+		data.setTotalRecentTrades(15);
+		data.setTotalBestTrades(15);
 		data.setUpTicketsStrategy(1);
 		data.setDownTicketsStrategy(1);
-//		data.setTotalRecentTraiding(5);
+		
 		VBox root = (VBox) loader.load(fxmlStream);
 		Scene scene = new Scene(root);
 		stage.setScene(scene);
