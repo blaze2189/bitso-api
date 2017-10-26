@@ -53,7 +53,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx); //To change body of generated methods, choose Tools | Templates.
+        super.channelInactive(ctx); 
     }
 
     @Override

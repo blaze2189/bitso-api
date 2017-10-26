@@ -26,7 +26,7 @@ public class BitsoChannelSubscriberImpl implements BitsoChannelSubscriber {
 	@Override
 	public void subscribeBitsoChannel() throws SocketDisconnectedException {
 		String message;
-		if (webSocketOrder.isConeccted()) {
+		if (webSocketOrder.isConnected()) {
 			message = "{ \"action\": \"subscribe\", \"book\": \"btc_mxn\", \"type\": \"" + this.channelName + "\" }";
 			DefaultByteBufHolder textWebSocketFrame = new TextWebSocketFrame(message);
 			webSocketOrder.getChannel().writeAndFlush(textWebSocketFrame);

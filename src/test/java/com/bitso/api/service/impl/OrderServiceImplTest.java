@@ -4,9 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,24 +11,27 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.bitso.api.main.test.ConfigurationTest;
-import com.bitso.api.service.OrderBookMaintainerService;
+import com.bitso.api.service.OrderService;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
-import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.api.websocket.BitsoWebSocketObserver;
 import com.bitso.api.websocket.WebSocketConnection;
+import com.bitso.api.websocket.impl.BitsoDiffOrdersChannel;
+import com.bitso.api.websocket.impl.BitsoOrdersChannel;
 import com.bitso.api.websocket.impl.BitsoTradesChannel;
-import com.bitso.api.websocket.impl.BitsoWebSocketOrderObserverImpl;
+import com.bitso.api.websocket.impl.BitsoWebSocketObserverImpl;
 import com.bitso.api.websocket.impl.WebSocketConnectionImpl;
 import com.bitso.entity.DiffOrdersWocketResponse;
 import com.bitso.entity.OrderBookRestResponse;
 
-public class OrderBookMaintainerServiceImplTest {
+public class OrderServiceImplTest {
 
 	private ApplicationContext applicationContext;
 
-	private OrderBookMaintainerService orderBookMaintainerService;
+	private OrderService orderBookMaintainerService;
 
 	private List<DiffOrdersWocketResponse> recentBids;
 	private List<DiffOrdersWocketResponse> recentAsks;
+	private BitsoChannelSubscriber bitsoOrdersChannel;
 	private Integer lastSequenceTrade;
 
 	@Before
@@ -39,7 +39,7 @@ public class OrderBookMaintainerServiceImplTest {
 		applicationContext = new AnnotationConfigApplicationContext();
 		((AnnotationConfigApplicationContext) applicationContext).register(ConfigurationTest.class);
 		((AnnotationConfigApplicationContext) applicationContext).refresh();
-		orderBookMaintainerService = applicationContext.getBean(OrderBookMaintainerServiceImpl.class);
+		orderBookMaintainerService = applicationContext.getBean(OrderServiceImpl.class);
 	}
 
 	@Test
@@ -49,13 +49,15 @@ public class OrderBookMaintainerServiceImplTest {
 		recentAsks = applicationContext.getBean("recentAsks", List.class);
 		lastSequenceTrade = applicationContext.getBean("lastSequenceTrade", Integer.class);
 		OrderBookRestResponse orderBook = applicationContext.getBean("orderBook", OrderBookRestResponse.class);
-		BitsoChannelSubscriber tradeChannel = applicationContext.getBean(BitsoTradesChannel.class);
+		
+//		BitsoChannelSubscriber tradeChannel = applicationContext.getBean(BitsoTradesChannel.class);
 		try (WebSocketConnection webSocketOrder = applicationContext.getBean(WebSocketConnectionImpl.class)) {
-			BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver = applicationContext
-					.getBean(BitsoWebSocketOrderObserverImpl.class);
+			BitsoWebSocketObserver bitsoWebSocketOrderObserver = applicationContext
+					.getBean(BitsoWebSocketObserverImpl.class);
+			bitsoOrdersChannel = applicationContext.getBean(BitsoDiffOrdersChannel.class);
 			((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
-
 			webSocketOrder.openConnection();
+			bitsoOrdersChannel.subscribeBitsoChannel();
 			orderBookMaintainerService.updateOrderBook();
 
 //			Runnable task = () -> {

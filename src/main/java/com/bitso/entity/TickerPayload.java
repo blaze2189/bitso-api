@@ -38,7 +38,7 @@ public class TickerPayload extends RestPayload {
 				.append("volume:").append(volume).append("\n").append("vwap:").append(vwap).append("\n").append("low:")
 				.append(low).append("\n").append("ask:").append(ask).append("\n").append("bid:").append(bid)
 				.append("\n");
-		return stringPayload.toString(); // To change body of generated methods, choose Tools | Templates.
+		return stringPayload.toString(); 
 	}
 
 }

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
  *
  * @author Jorge
  */
-public interface BitsoWebSocketOrderObserver extends Observer {
+public interface BitsoWebSocketObserver extends Observer {
     
     Boolean isConnected();
      void tradeSubscribeAction()  throws JsonParseException, JsonMappingException, IOException;

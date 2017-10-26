@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
+import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.OrderBookRestResponse;
 import com.bitso.rest.client.BitsoOrderBook;
 
@@ -26,6 +27,9 @@ public class BitsoOrderBookImpl implements BitsoOrderBook {
 	@Autowired
 	protected RestTemplate restTemplate;
 
+	@Autowired
+	protected DataConfiguration dataConfiguration;
+	
 	@Override
 	public OrderBookRestResponse getOrderBook() {
 		OrderBookRestResponse returnResponse = null;

@@ -37,6 +37,8 @@ public class DataConfiguration {
 	private Integer totalRecentTrades;
 	private Integer totalBestTrades;
 
+	private Integer lastSequenceTrade;
+	
 	@Autowired
 	private PayloadSocketComparator payloadSocketComparator;
 
@@ -50,8 +52,6 @@ public class DataConfiguration {
 		return 0;
 	}
 
-	private Integer lastSequenceTrade;
-
 	@Bean
 	private TradeRestResponse tradeRestResponse() {
 		return new TradeRestResponse();
@@ -62,8 +62,6 @@ public class DataConfiguration {
 		return 0;
 	}
 
-	// private List<TradePayload> listTradePayload =Collections.synchronizedList(new
-	// ArrayList<TradePayload>());
 	private List<TradePayload> listTradePayload = FXCollections.observableArrayList();
 
 	@Bean(name = "listTradePayload")
@@ -73,13 +71,11 @@ public class DataConfiguration {
 
 	@Bean(name = "topAsks")
 	public Set<WebSocketPayload> listTopAsk() {
-		// return Collections.synchronizedList(new ArrayList<>());
 		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 
 	@Bean(name = "topBids")
 	public Set<WebSocketPayload> listTopBid() {
-		// return Collections.synchronizedList(new ArrayList<>());
 		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
 	}
 
@@ -98,10 +94,5 @@ public class DataConfiguration {
 		return Collections.synchronizedList(new ArrayList<>());
 	}
 
-	// @FXML
-	// private TableView<TradePayload> tableView;
-	// private TableColumn<TradePayload, String> book;
-	// private TableColumn<TradePayload, String> makerSide;
-	// private TableColumn<TradePayload, String> amount;
 
 }

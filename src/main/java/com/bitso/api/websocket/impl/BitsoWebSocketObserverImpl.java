@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import com.bitso.api.service.TradeService;
-import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.api.websocket.BitsoWebSocketObserver;
 import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.DiffOrdersWocketResponse;
 import com.bitso.entity.OrderBookRestResponse;
@@ -36,17 +36,7 @@ import javafx.scene.control.TableView;
  * @author Jorge
  */
 @Component
-public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObserver {
-
-//	@Autowired
-//	protected BitsoTrade bitsoTrade;
-
-//	@Autowired
-//	protected TradeRestResponse bitsoTradeResponse;
-
-	@Autowired
-	@Qualifier("totalRecentTrades")
-	protected Integer totalRecentTrades;
+public class BitsoWebSocketObserverImpl implements BitsoWebSocketObserver {
 
 	private Boolean isConnected;
 
@@ -109,6 +99,7 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 
 		Integer lastTrade = dataConfiguration.getLastSequenceTrade();
 		Integer topBestTrades = dataConfiguration.getTotalBestTrades();
+		
 		TableView<WebSocketPayload> tableViewBest;
 
 		List<WebSocketPayload> topBestBids = new ArrayList<>();
@@ -132,7 +123,6 @@ public class BitsoWebSocketOrderObserverImpl implements BitsoWebSocketOrderObser
 		tableViewBest.getItems().setAll(topBestAsks);
 		tableViewBest.refresh();
 
-		// messageReceived.add(message);
 	}
 
 	@Override

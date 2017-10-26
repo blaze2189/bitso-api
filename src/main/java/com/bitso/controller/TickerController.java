@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.bitso.api.main.InitApp;
 import com.bitso.api.table.model.TradePayloadModel;
-import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.api.websocket.BitsoWebSocketObserver;
 import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.TradePayload;
 import com.bitso.entity.WebSocketPayload;
@@ -64,15 +64,14 @@ public class TickerController implements Initializable {
 	private TradePayloadModel tradePayloadTableModel;
 	private TradePayloadModel tradePayloadTableModel2;
 
-	// @Autowired
-	private BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver;
+	private BitsoWebSocketObserver bitsoWebSocketOrderObserver;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void initialize(URL url, ResourceBundle resourceBundle) {
 		ApplicationContext applicationContext = InitApp.getInstance().getApplicationContext();
 		dataConfiguration = applicationContext.getBean(DataConfiguration.class);
-		bitsoWebSocketOrderObserver = applicationContext.getBean(BitsoWebSocketOrderObserver.class);
+		bitsoWebSocketOrderObserver = applicationContext.getBean(BitsoWebSocketObserver.class);
 	
 		price.setCellFactory(column -> new TradePayloadModel());
 		makerSide.setCellFactory(column -> new TradePayloadModel());
@@ -92,43 +91,6 @@ public class TickerController implements Initializable {
 		if (bestBidsTableView != null) {
 			dataConfiguration.setTableViewBestBids(bestBidsTableView);
 		}
-//		if (dataConfiguration != null) {
-//			// listBitsoResponse = bitsoWebSocketOrderObserver.getListBitsoRespone();
-//			listBitsoResponse = dataConfiguration.getListTradePayload();
-//		}
-//		if (listBitsoResponse != null) {
-//			tradePayloadTableView.getItems().setAll(listBitsoResponse);
-//			tradePayloadTableView.refresh();
-//		}
-
 	}
-
-	// private class TableModel extends TableCell<TradePayload, Object> {
-	//
-	// @Override
-	// protected void updateItem(Object item, boolean empty) {
-	// String style = getTableRow() != null && getTableRow().getItem() != null &&
-	// getTableRow().getItem().getTid().equals("N/A")
-	// ? "-fx-text-fill: red"
-	// : "-fx-text-fill: green";
-	// String cellValue="";
-	// System.out.println(getTableColumn().getId());
-	// if (item instanceof String) {
-	// cellValue=String.valueOf(item);
-	// try {
-	// Double itemDouble=Double.parseDouble(cellValue);
-	// NumberFormat numberFormat = new DecimalFormat("#0.000000");
-	// cellValue =numberFormat.format(itemDouble);
-	// }catch(NumberFormatException e) {
-	// }
-	// } else if (item instanceof Date) {
-	// DateFormat df = new SimpleDateFormat("dd-MM-yy HH:mm:ss.SSS");
-	// cellValue = df.format((Date) item);
-	// } else if (item instanceof Double) {
-	// }
-	// setStyle(style);
-	// setText(cellValue);
-	// }
-	// }
 
 }

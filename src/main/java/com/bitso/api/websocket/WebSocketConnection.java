@@ -17,7 +17,7 @@ public interface WebSocketConnection extends AutoCloseable {
 
     void closeConnection() throws InterruptedException;
     
-    boolean isConeccted();
+    boolean isConnected();
     
     Channel getChannel();
 }

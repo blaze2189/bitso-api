@@ -6,12 +6,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
 import com.bitso.api.websocket.BitsoChannelSubscriber;
-import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.api.websocket.BitsoWebSocketObserver;
 import com.bitso.api.websocket.WebSocketConnection;
 import com.bitso.api.websocket.impl.BitsoDiffOrdersChannel;
 import com.bitso.api.websocket.impl.BitsoOrdersChannel;
 import com.bitso.api.websocket.impl.BitsoTradesChannel;
-import com.bitso.api.websocket.impl.BitsoWebSocketOrderObserverImpl;
+import com.bitso.api.websocket.impl.BitsoWebSocketObserverImpl;
 import com.bitso.api.websocket.impl.WebSocketConnectionImpl;
 
 import lombok.Getter;
@@ -54,14 +54,13 @@ public class InitApp {
 			BitsoChannelSubscriber tradeChannel = applicationContext.getBean(BitsoTradesChannel.class);
 			try  {
 				webSocketOrder = applicationContext.getBean(WebSocketConnectionImpl.class);
-				BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver = applicationContext
-						.getBean(BitsoWebSocketOrderObserverImpl.class);
+				BitsoWebSocketObserver bitsoWebSocketOrderObserver = applicationContext
+						.getBean(BitsoWebSocketObserverImpl.class);
 				((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
 				webSocketOrder.openConnection();
 				orderChannel.subscribeBitsoChannel();
 				 diffOrderChannel.subscribeBitsoChannel();
 				 tradeChannel.subscribeBitsoChannel();
-//				 Thread.sleep(20000);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

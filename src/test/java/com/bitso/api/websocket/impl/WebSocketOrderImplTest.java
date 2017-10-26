@@ -22,9 +22,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.bitso.api.main.test.ConfigurationTest;
 import com.bitso.api.service.TradeService;
-import com.bitso.api.service.impl.TradeServiceImpl;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
-import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.api.websocket.BitsoWebSocketObserver;
 import com.bitso.api.websocket.WebSocketConnection;
 import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.TradePayload;
@@ -98,13 +97,11 @@ public class WebSocketOrderImplTest {
 		BitsoChannelSubscriber diffOrderChannel = applicationContext.getBean(BitsoDiffOrdersChannel.class);
 		BitsoChannelSubscriber tradeChannel = applicationContext.getBean(BitsoTradesChannel.class);
 		try (WebSocketConnection webSocketOrder = applicationContext.getBean(WebSocketConnectionImpl.class)) {
-			BitsoWebSocketOrderObserver bitsoWebSocketOrderObserver = applicationContext
-					.getBean(BitsoWebSocketOrderObserverImpl.class);
-			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).tradeService = this.tradeService;
-//			((TradeServiceImpl)tradeService).bitsoTrade = this.bitsoTrade;
+			BitsoWebSocketObserver bitsoWebSocketOrderObserver = applicationContext
+					.getBean(BitsoWebSocketObserverImpl.class);
+			((BitsoWebSocketObserverImpl) bitsoWebSocketOrderObserver).tradeService = this.tradeService;
 			when(bitsoTrade.getRecentTrades()).thenReturn(createBitsoResponse());
 			((WebSocketConnectionImpl) webSocketOrder).addObserver(bitsoWebSocketOrderObserver);
-			((BitsoWebSocketOrderObserverImpl) bitsoWebSocketOrderObserver).totalRecentTrades = 10;
 			webSocketOrder.openConnection();
 //			orderChannel.subscribeBitsoChannel();
 //			 diffOrderChannel.subscribeBitsoChannel();

@@ -46,7 +46,8 @@ implements WebSocketConnection {
     @Autowired
     protected BitsoWebSocketInitializer bitsoWebSocketInitializer;
 
-    private Boolean isConnected;
+    private boolean isConnected;
+    
     private Channel channel;
     
     @Value("${bitso.port}")
@@ -61,7 +62,7 @@ implements WebSocketConnection {
         Bootstrap bootsrapGroup = bootstrap.group(eventLoopGroup);
         Bootstrap bootsrapChannel = bootsrapGroup.channel(NioSocketChannel.class);
         bootsrapChannel.handler(bitsoWebSocketInitializer);
-        channel=bootstrap.connect(bitsoServer, Integer.parseInt(bitsoPort)).sync().channel();//Server name
+        channel=bootstrap.connect(bitsoServer, Integer.parseInt(bitsoPort)).sync().channel();
         ChannelFuture cF = bitsoWebSocketClientHandler.getChannelPromise();
         cF.sync();
         setConnected(Boolean.TRUE);
@@ -91,7 +92,7 @@ implements WebSocketConnection {
     }
 
     @Override
-    public boolean isConeccted() {
+    public boolean isConnected() {
         return isConnected;
     }
 

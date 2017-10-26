@@ -1,5 +1,7 @@
 package com.bitso.api.service.impl;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -33,44 +35,47 @@ public class TradeServiceImpl implements TradeService {
 		Set<TradePayload> newPayload = new TreeSet<>(new TradePayloadComparator());
 		TradeRestResponse bitsoTradeResponse = bitsoTrade.getRecentTrades();
 		List<TradePayload> oldPayload = bitsoTradeResponse.getTradePayload();
-		// TableView<TradePayload> tableView =
-		// dataConfiguration.getTradePayloadTableView();
+		Collections.sort(oldPayload,new  Comparator<TradePayload>() {
+
+			@Override
+			public int compare(TradePayload arg0, TradePayload arg1) {
+				return arg0.getTid().compareTo(arg1.getTid());
+			}
+			
+		});
 		int upTicketsLimit = dataConfiguration.getUpTicketsStrategy();
 		int downTicketsLimit = dataConfiguration.getDownTicketsStrategy();
 		AtomicInteger counterUpTickets = new AtomicInteger(0);
 		AtomicInteger counterDownTickets = new AtomicInteger(0);
 		AtomicInteger counter = new AtomicInteger(0);
-		// if (tableView != null) {
-
 		oldPayload.forEach(item -> {
-			boolean addPayload = newPayload.size() <= dataConfiguration.getTotalRecentTrades();
-			if (addPayload) {
+			if (newPayload.size() < dataConfiguration.getTotalRecentTrades()) {
+				newPayload.add(item);
+			}
+			if (newPayload.size() < dataConfiguration.getTotalRecentTrades()) {
 				int nextItem = counter.incrementAndGet();
 				if (nextItem < oldPayload.size()) {
 					TradePayload nextPayload = oldPayload.get(nextItem);
 					Double itemPrice = Double.valueOf(item.getPrice());
-					Double lastPrice = Double.valueOf(nextPayload.getPrice());
-
-					if (itemPrice < lastPrice) {
+					Double nextItemPrice = Double.valueOf(nextPayload.getPrice());
+					if (itemPrice < nextItemPrice) {
 						counterDownTickets.set(0);
-						if (counterUpTickets.getAndIncrement() >= upTicketsLimit) {
+						if (counterUpTickets.incrementAndGet() >= upTicketsLimit) {
 							TradePayload falseTrade = new TradePayload();
 							falseTrade.setBook("btc_mxn");
 							falseTrade.setCreatedAt(nextPayload.getCreatedAt());
-							// falseTrade.setCreatedAt(new Date());
 							falseTrade.setAmount("1");
 							falseTrade.setMakerSide("buy");
 							falseTrade.setPrice(nextPayload.getPrice());
 							falseTrade.setTid("N/A");
 							newPayload.add(falseTrade);
 						}
-					} else if (itemPrice > lastPrice) {
+					} else if (itemPrice > nextItemPrice) {
 						counterUpTickets.set(0);
-						if (counterDownTickets.getAndIncrement() >= downTicketsLimit) {
+						if (counterDownTickets.incrementAndGet() >= downTicketsLimit) {
 							TradePayload falseTrade = new TradePayload();
 							falseTrade.setBook("btc_mxn");
 							falseTrade.setCreatedAt(nextPayload.getCreatedAt());
-							// falseTrade.setCreatedAt(new Date());
 							falseTrade.setAmount("1");
 							falseTrade.setMakerSide("sell");
 							falseTrade.setPrice(nextPayload.getPrice());
@@ -79,9 +84,7 @@ public class TradeServiceImpl implements TradeService {
 						}
 					}
 				}
-				if (newPayload.size() <= dataConfiguration.getTotalRecentTrades()) {
-					newPayload.add(item);
-				}
+				
 			}
 		});
 		return newPayload;

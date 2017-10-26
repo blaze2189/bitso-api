@@ -12,9 +12,6 @@ import javafx.scene.control.TableCell;
 
 public class TradePayloadModel extends TableCell<TradePayload, Object> {
 
-	public TradePayloadModel() {
-		// TODO Auto-generated constructor stub
-	}
 
 	@Override
 	protected void updateItem(Object item, boolean empty) {
@@ -22,6 +19,9 @@ public class TradePayloadModel extends TableCell<TradePayload, Object> {
 				&& getTableRow().getItem().getTid().equals("N/A") ? "-fx-text-fill: red" : "-fx-text-fill: green";
 		String cellValue = "";
 		System.out.println(getTableColumn().getId());
+		if(item instanceof Integer) {
+			cellValue = String.valueOf(item);
+		}else
 		if (item instanceof String) {
 			cellValue = String.valueOf(item);
 			try {
