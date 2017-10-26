@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import com.bitso.api.main.InitApp;
 import com.bitso.api.table.model.TradePayloadModel;
 import com.bitso.api.table.model.WebSocketPayloadModel;
-import com.bitso.api.websocket.BitsoWebSocketOrderObserver;
+import com.bitso.api.websocket.BitsoWebSocketObserver;
 import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.TradePayload;
 import com.bitso.entity.WebSocketPayload;
