@@ -60,12 +60,12 @@
    <Label alignment="CENTER_LEFT" text="Best Offers"/>
    <TableView fx:id="bestAsksTableView">
      <columns>
-       <TableColumn text="identifier" fx:id="bestAsksId">
-         <cellValueFactory><PropertyValueFactory property="identifier" />
+       <TableColumn text="Rate" fx:id="bestAsksRate">
+         <cellValueFactory><PropertyValueFactory property="rate" />
          </cellValueFactory>
        </TableColumn>
-       <TableColumn text="Maker Side" fx:id="bestAsksMakerSide">
-         <cellValueFactory><PropertyValueFactory property="makerSide" />
+       <TableColumn text="Value" fx:id="bestAsksValue">
+         <cellValueFactory><PropertyValueFactory property="value" />
        </cellValueFactory>
        </TableColumn>
        <TableColumn text="Amount" fx:id="bestAsksAmount">
@@ -78,12 +78,12 @@
     <Label alignment="CENTER_LEFT" text="Best Bids"/>
     <TableView fx:id="bestBidsTableView">
       <columns>
-        <TableColumn text="identifier" fx:id="bestBidsIdentifier">
-          <cellValueFactory><PropertyValueFactory property="identifier" />
+        <TableColumn text="Rate" fx:id="bestBidsRate">
+          <cellValueFactory><PropertyValueFactory property="rate" />
           </cellValueFactory>
         </TableColumn>
-        <TableColumn text="Maker Side" fx:id="bestBidsMakerSide">
-          <cellValueFactory><PropertyValueFactory property="makerSide" />
+        <TableColumn text="Value" fx:id="bestBidsValue">
+          <cellValueFactory><PropertyValueFactory property="value" />
           </cellValueFactory>
         </TableColumn>
         <TableColumn text="Amount" fx:id="bestBidsAmount">

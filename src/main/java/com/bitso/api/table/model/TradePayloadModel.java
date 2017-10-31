@@ -18,7 +18,6 @@ public class TradePayloadModel extends TableCell<TradePayload, Object> {
 		String style = getTableRow() != null && getTableRow().getItem() != null
 				&& getTableRow().getItem().getTid().equals("N/A") ? "-fx-text-fill: red" : "-fx-text-fill: green";
 		String cellValue = "";
-		System.out.println(getTableColumn().getId());
 		if(item instanceof Integer) {
 			cellValue = String.valueOf(item);
 		}else

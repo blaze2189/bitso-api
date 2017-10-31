@@ -17,7 +17,6 @@ import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker;
 import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.util.CharsetUtil;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -29,75 +28,80 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClientHandler extends ChannelInboundHandlerAdapter {
 
-    @Autowired
-    private WebSocketConnection webSocektConnection;
-    
-    @Autowired
-    @Qualifier("websocketClientHandshaker")
-    private WebSocketClientHandshaker webSocketClientHandshaker;
-    private ChannelPromise channelPromise;
-    
-    public ChannelFuture getChannelPromise() {
-        return channelPromise;
-    }
+	@Autowired
+	private WebSocketConnection webSocektConnection;
 
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        channelPromise = ctx.newPromise();
-    }
+	@Autowired
+	@Qualifier("websocketClientHandshaker")
+	private WebSocketClientHandshaker webSocketClientHandshaker;
+	private ChannelPromise channelPromise;
 
-    @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        webSocketClientHandshaker.handshake(ctx.channel());
-    }
+	public ChannelFuture getChannelPromise() {
+		return channelPromise;
+	}
 
-    @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        super.channelInactive(ctx); 
-    }
+	@Override
+	public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
+		channelPromise = ctx.newPromise();
+	}
 
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        Channel channel = ctx.channel();
+	@Override
+	public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		webSocketClientHandshaker.handshake(ctx.channel());
+	}
 
-        boolean handShakeComplete = !webSocketClientHandshaker.isHandshakeComplete();
+	@Override
+	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		super.channelInactive(ctx);
+	}
 
-        if (handShakeComplete) {
-            webSocketClientHandshaker.finishHandshake(channel, (FullHttpResponse) msg);
-            channelPromise.setSuccess();
-            return;
-        }
+	@Override
+	public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+		Channel channel = ctx.channel();
 
-        if (msg instanceof FullHttpResponse) {
-            FullHttpResponse response = (FullHttpResponse) msg;
-            throw new Exception("Unexpected FullHttpResponse: " + response.content().toString(CharsetUtil.UTF_8) + ") "+response.status());
-        }
+		boolean handShakeComplete = !webSocketClientHandshaker.isHandshakeComplete();
 
-        WebSocketFrame frame = (WebSocketFrame) msg;
-        if (frame instanceof TextWebSocketFrame) {
-            TextWebSocketFrame testWebSocketFrame = (TextWebSocketFrame) frame;
-            setMessageReceived(testWebSocketFrame.text());
-        }
+		if (handShakeComplete) {
+			webSocketClientHandshaker.finishHandshake(channel, (FullHttpResponse) msg);
+			channelPromise.setSuccess();
+			return;
+		}
 
-        if (frame instanceof CloseWebSocketFrame) {
-            setConnected(Boolean.FALSE);
-        }
-    }
-    
-    private void setMessageReceived(String message){
-        ((WebSocketConnectionImpl)webSocektConnection).setMessageReceived(message);
-    }
-    
-    private void setConnected(Boolean isConnected){
-        ((WebSocketConnectionImpl)webSocektConnection).setConnected(isConnected);
-    }
+		if (msg instanceof FullHttpResponse) {
+			FullHttpResponse response = (FullHttpResponse) msg;
+			throw new Exception("Unexpected FullHttpResponse: " + response.content().toString(CharsetUtil.UTF_8) + ") "
+					+ response.status());
+		}
 
-    @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        if (!channelPromise.isDone()) {
-            channelPromise.setFailure(cause);
-        }
-        ctx.close();
-    }
+		WebSocketFrame frame = (WebSocketFrame) msg;
+		if (frame instanceof TextWebSocketFrame) {
+			TextWebSocketFrame testWebSocketFrame = (TextWebSocketFrame) frame;
+			if (testWebSocketFrame != null && testWebSocketFrame.text() != null) {
+				setMessageReceived(testWebSocketFrame.text());
+			}
+		}
+
+		if (frame instanceof CloseWebSocketFrame) {
+			setConnected(Boolean.FALSE);
+		}
+	}
+
+	private void setMessageReceived(String message) {
+		if (message != null) {
+			((WebSocketConnectionImpl) webSocektConnection).setMessageReceived(message);
+		}
+	}
+
+	private void setConnected(Boolean isConnected) {
+		((WebSocketConnectionImpl) webSocektConnection).setConnected(isConnected);
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		if (!channelPromise.isDone()) {
+			channelPromise.setFailure(cause);
+		}
+		ctx.close();
+	}
 
 }

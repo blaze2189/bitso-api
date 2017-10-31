@@ -22,9 +22,6 @@ public class TradeServiceImpl implements TradeService {
 
 	@Autowired
 	protected BitsoTrade bitsoTrade;
-	
-	@Autowired
-	protected Integer totalRecentTrades;
 
 	@Autowired
 	protected DataConfiguration dataConfiguration;

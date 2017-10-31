@@ -5,6 +5,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
+import com.bitso.api.exception.SocketDisconnectedException;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
 import com.bitso.api.websocket.BitsoWebSocketObserver;
 import com.bitso.api.websocket.WebSocketConnection;
@@ -13,6 +14,7 @@ import com.bitso.api.websocket.impl.BitsoOrdersChannel;
 import com.bitso.api.websocket.impl.BitsoTradesChannel;
 import com.bitso.api.websocket.impl.BitsoWebSocketObserverImpl;
 import com.bitso.api.websocket.impl.WebSocketConnectionImpl;
+import com.bitso.configuration.DataConfiguration;
 
 import lombok.Getter;
 
@@ -42,7 +44,7 @@ public class InitApp {
 		}
 	}
 	
-	public  void start() {
+	public  void start() throws SocketDisconnectedException {
 			
 			 applicationContext = new AnnotationConfigApplicationContext();
 			((AnnotationConfigApplicationContext) applicationContext).register(InitApp.class);
@@ -61,8 +63,8 @@ public class InitApp {
 				orderChannel.subscribeBitsoChannel();
 				 diffOrderChannel.subscribeBitsoChannel();
 				 tradeChannel.subscribeBitsoChannel();
-			} catch (Exception e) {
-				e.printStackTrace();
+			}catch(InterruptedException|SocketDisconnectedException ie) {
+				throw new SocketDisconnectedException(ie);
 			}
 			
 	

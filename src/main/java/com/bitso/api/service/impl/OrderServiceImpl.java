@@ -1,5 +1,6 @@
 package com.bitso.api.service.impl;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -8,12 +9,15 @@ import com.bitso.api.exception.SocketDisconnectedException;
 import com.bitso.api.service.OrderService;
 import com.bitso.api.websocket.BitsoChannelSubscriber;
 import com.bitso.api.websocket.WebSocketConnection;
+import com.bitso.configuration.DataConfiguration;
 import com.bitso.entity.OrderBookRestResponse;
 import com.bitso.rest.client.BitsoOrderBook;
 
 @Service
 public class OrderServiceImpl implements OrderService {
 
+	private static final Logger logger = Logger.getLogger(OrderServiceImpl.class);
+	
 	@Autowired
 	protected BitsoOrderBook bitsoOrderBook;
 
@@ -26,8 +30,7 @@ public class OrderServiceImpl implements OrderService {
 	protected OrderBookRestResponse orderBook;
 
 	@Autowired
-	@Qualifier("lastSequenceTrade")
-	protected Integer lastSequenceTrade;
+	protected DataConfiguration dataConfiguration;
 
 	@Autowired
 	protected WebSocketConnection webSocketConnection;
@@ -41,9 +44,10 @@ public class OrderServiceImpl implements OrderService {
 			}
 			bitsoDiffOrdersChannel.subscribeBitsoChannel();
 			orderBook = bitsoOrderBook.getOrderBook();
-			lastSequenceTrade = orderBook.getOrderPayload().getSequence();
+			Integer lastSequenceTrade = orderBook.getOrderPayload().getSequence();
+			dataConfiguration.setLastSequenceTrade(lastSequenceTrade);
 		} catch (SocketDisconnectedException e) {
-			e.printStackTrace();
+			logger.error("Error connecting to socket\n"+e);
 		}
 	}
 

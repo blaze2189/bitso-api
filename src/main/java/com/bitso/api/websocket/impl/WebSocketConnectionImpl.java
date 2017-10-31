@@ -27,77 +27,77 @@ import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
  * @author Jorge
  */
 @Service
-public class WebSocketConnectionImpl extends Observable 
-implements WebSocketConnection {
+public class WebSocketConnectionImpl extends Observable implements WebSocketConnection {
 
-    @Autowired
-    protected ClientHandler bitsoWebSocketClientHandler;
-    
-    @Autowired
-    @Qualifier("defaulHttpHeaders")
-    protected HttpHeaders httpHeaders;
+	@Autowired
+	protected ClientHandler bitsoWebSocketClientHandler;
 
-    @Autowired
-    protected Bootstrap bootstrap;
+	@Autowired
+	@Qualifier("defaulHttpHeaders")
+	protected HttpHeaders httpHeaders;
 
-    @Autowired
-    protected EventLoopGroup eventLoopGroup;
-    
-    @Autowired
-    protected BitsoWebSocketInitializer bitsoWebSocketInitializer;
+	@Autowired
+	protected Bootstrap bootstrap;
 
-    private boolean isConnected;
-    
-    private Channel channel;
-    
-    @Value("${bitso.port}")
-    private String bitsoPort;
-    
-    @Value("${bitso.server}")
-    private String bitsoServer;
+	@Autowired
+	protected EventLoopGroup eventLoopGroup;
 
-    @Override
-    public void openConnection() 
-        throws InterruptedException{
-        Bootstrap bootsrapGroup = bootstrap.group(eventLoopGroup);
-        Bootstrap bootsrapChannel = bootsrapGroup.channel(NioSocketChannel.class);
-        bootsrapChannel.handler(bitsoWebSocketInitializer);
-        channel=bootstrap.connect(bitsoServer, Integer.parseInt(bitsoPort)).sync().channel();
-        ChannelFuture cF = bitsoWebSocketClientHandler.getChannelPromise();
-        cF.sync();
-        setConnected(Boolean.TRUE);
-    }
-    
-    public void setConnected(Boolean connected) {
-        isConnected = connected;
-        setChanged();
-        notifyObservers(isConnected);
-    }
-    
-    public void setMessageReceived(String messageReceived){
-        setChanged();
-        notifyObservers(messageReceived);
-    }
+	@Autowired
+	protected BitsoWebSocketInitializer bitsoWebSocketInitializer;
 
-    @Override
-    public void closeConnection() throws InterruptedException{
-        channel.writeAndFlush(new CloseWebSocketFrame());
-        channel.closeFuture().sync();
-        eventLoopGroup.shutdownGracefully();
-    }
+	private boolean isConnected;
 
-    @Override
-    public void close() throws Exception {
-        this.closeConnection();
-    }
+	private Channel channel;
 
-    @Override
-    public boolean isConnected() {
-        return isConnected;
-    }
+	@Value("${bitso.port}")
+	private String bitsoPort;
 
-    @Override
-    public Channel getChannel() {
+	@Value("${bitso.server}")
+	private String bitsoServer;
+
+	@Override
+	public void openConnection() throws InterruptedException {
+		Bootstrap bootsrapGroup = bootstrap.group(eventLoopGroup);
+		Bootstrap bootsrapChannel = bootsrapGroup.channel(NioSocketChannel.class);
+		bootsrapChannel.handler(bitsoWebSocketInitializer);
+		channel = bootstrap.connect(bitsoServer, Integer.parseInt(bitsoPort)).sync().channel();
+		ChannelFuture cF = bitsoWebSocketClientHandler.getChannelPromise();
+		cF.sync();
+		setConnected(Boolean.TRUE);
+	}
+
+	public void setConnected(Boolean connected) {
+		isConnected = connected;
+		setChanged();
+		notifyObservers(isConnected);
+	}
+
+	public void setMessageReceived(String messageReceived) {
+		if (messageReceived != null) {
+			setChanged();
+			notifyObservers(messageReceived);
+		}
+	}
+
+	@Override
+	public void closeConnection() throws InterruptedException {
+		channel.writeAndFlush(new CloseWebSocketFrame());
+		channel.closeFuture().sync();
+		eventLoopGroup.shutdownGracefully();
+	}
+
+	@Override
+	public void close() throws Exception {
+		this.closeConnection();
+	}
+
+	@Override
+	public boolean isConnected() {
+		return isConnected;
+	}
+
+	@Override
+	public Channel getChannel() {
 		return channel;
 	}
 }
