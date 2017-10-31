@@ -34,7 +34,6 @@ import javafx.scene.control.TableView;
 @Component
 public class TickerController implements Initializable {
 
-	/////////////////////////////////////////////////////
 	@FXML
 	private TableView<WebSocketPayload> bestAsksTableView;
 	@FXML
@@ -54,8 +53,6 @@ public class TickerController implements Initializable {
 	@FXML
 	private TableColumn<WebSocketPayload,Object> bestBidsAmount;
 
-	/////////////////////////////////////////////////////
-
 	@FXML
 	private TableView<TradePayload> tradePayloadTableView;
 	@FXML
@@ -70,20 +67,6 @@ public class TickerController implements Initializable {
 	private TableColumn<TradePayload, Object> tid;
 	@FXML
 	private TableColumn<TradePayload, Object> createdAt;
-
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestAsksId;
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestAsksMakerSide;
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestAsksAmount;
-
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestBidsIdentifier;
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestBidsMakerSide;
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestBidsAmount;
 
 	@Autowired
 	private BitsoTicker bitsoTicker;

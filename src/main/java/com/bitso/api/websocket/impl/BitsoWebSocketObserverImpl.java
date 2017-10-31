@@ -43,14 +43,6 @@ public class BitsoWebSocketObserverImpl implements BitsoWebSocketObserver {
 
 	private static final Logger logger = Logger.getLogger(BitsoWebSocketObserverImpl.class);
 
-//	@Autowired
-//	@Qualifier("recentBids")
-//	private List<DiffOrdersWocketResponse> recentBids;
-//
-//	@Autowired
-//	@Qualifier("recentAsks")
-//	private List<DiffOrdersWocketResponse> recentAsks;
-
 	{
 		isConnected = false;
 	}
@@ -59,10 +51,6 @@ public class BitsoWebSocketObserverImpl implements BitsoWebSocketObserver {
 	public Boolean isConnected() {
 		return isConnected;
 	}
-
-//	@Autowired
-//	@Qualifier("orderBook")
-//	public OrderBookRestResponse orderBook;
 
 	@Autowired
 	private DataConfiguration dataConfiguration;

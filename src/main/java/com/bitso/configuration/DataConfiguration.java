@@ -44,30 +44,12 @@ public class DataConfiguration {
 	
 	private Set<WebSocketPayload> listTopAsk;
 	private Set<WebSocketPayload> listTopBid;
-	
-//	@Bean(name = "topAsks")
-//	public Set<WebSocketPayload> listTopAsk() {
-//		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
-//	}
-//
-//	@Bean(name = "topBids")
-//	public Set<WebSocketPayload> listTopBid() {
-//		return Collections.synchronizedSet(new TreeSet<>(payloadSocketComparator));
-//	}
+
 
 	@Bean(name = "orderBook")
 	public OrderBookRestResponse orderBook() {
 		return new OrderBookRestResponse();
 	}
 
-//	@Bean(name = "recentBids")
-//	public List<DiffOrdersWocketResponse> recentBids() {
-//		return Collections.synchronizedList(new ArrayList<>());
-//	}
-//
-//	@Bean(name = "recentAsks")
-//	public List<DiffOrdersWocketResponse> recentAsks() {
-//		return Collections.synchronizedList(new ArrayList<>());
-//	}
 
 }
