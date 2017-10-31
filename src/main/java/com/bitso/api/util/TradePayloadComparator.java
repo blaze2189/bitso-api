@@ -15,7 +15,7 @@ public class TradePayloadComparator implements Comparator<TradePayload>{
 		compare = dateOne.compareTo(dateTwo);
 		if(compare==0) {
 			if(tradePayloadOne.getPrice().equals(tradePayloadTwo.getPrice()) ) {
-				if(tradePayloadTwo.getTid().equals("N/A") && tradePayloadTwo.getTid().equals("N/A")) {
+				if(tradePayloadOne.getTid().equals("N/A") && tradePayloadTwo.getTid().equals("N/A")) {
 					compare=0;
 				}else if(tradePayloadOne.getTid().equals("N/A") && 
 						!tradePayloadTwo.getTid().equals("N/A")) {

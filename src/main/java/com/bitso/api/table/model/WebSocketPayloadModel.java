@@ -13,6 +13,10 @@ public class WebSocketPayloadModel extends TableCell<WebSocketPayload,Object> {
 	protected void updateItem(Object item, boolean empty) {
 		String style = "-fx-text-fill: blue";
 		String cellValue = "";
+<<<<<<< HEAD
+=======
+		System.out.println(getTableColumn().getId());
+>>>>>>> develop
 		if (item instanceof String) {
 			cellValue = String.valueOf(item);
 			try {
@@ -27,4 +31,8 @@ public class WebSocketPayloadModel extends TableCell<WebSocketPayload,Object> {
 		setText(cellValue);
 	}
 	
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> develop

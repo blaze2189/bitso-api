@@ -39,21 +39,21 @@ public class TickerController implements Initializable {
 	private TableView<WebSocketPayload> bestAsksTableView;
 	@FXML
 	private TableView<WebSocketPayload> bestBidsTableView;
-	
+
 	@FXML
 	private TableColumn<WebSocketPayload,Object> bestAsksRate;
 	@FXML
 	private TableColumn<WebSocketPayload,Object> bestAsksValue;
 	@FXML
 	private TableColumn<WebSocketPayload,Object> bestAsksAmount;
-	
+
 	@FXML
 	private TableColumn<WebSocketPayload,Object> bestBidsRate;
 	@FXML
 	private TableColumn<WebSocketPayload,Object> bestBidsValue;
 	@FXML
 	private TableColumn<WebSocketPayload,Object> bestBidsAmount;
-	
+
 	/////////////////////////////////////////////////////
 
 	@FXML
@@ -71,6 +71,20 @@ public class TickerController implements Initializable {
 	@FXML
 	private TableColumn<TradePayload, Object> createdAt;
 
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestAsksId;
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestAsksMakerSide;
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestAsksAmount;
+
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestBidsIdentifier;
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestBidsMakerSide;
+	@FXML
+	private TableColumn<WebSocketPayload, Object> bestBidsAmount;
+
 	@Autowired
 	private BitsoTicker bitsoTicker;
 
@@ -84,7 +98,7 @@ public class TickerController implements Initializable {
 		ApplicationContext applicationContext = InitApp.getInstance().getApplicationContext();
 		dataConfiguration = applicationContext.getBean(DataConfiguration.class);
 		bitsoWebSocketOrderObserver = applicationContext.getBean(BitsoWebSocketObserver.class);
-	
+
 		price.setCellFactory(column -> new TradePayloadModel());
 		makerSide.setCellFactory(column -> new TradePayloadModel());
 		book.setCellFactory(column -> new TradePayloadModel());
@@ -98,7 +112,7 @@ public class TickerController implements Initializable {
 		bestAsksValue.setCellFactory(column -> new WebSocketPayloadModel());
 		bestBidsRate.setCellFactory(column -> new WebSocketPayloadModel());
 		bestAsksRate.setCellFactory(column -> new WebSocketPayloadModel());
-		
+
 		List<TradePayload> listBitsoResponse = null;
 		if (tradePayloadTableView != null) {
 			dataConfiguration.setTradePayloadTableView(tradePayloadTableView);
