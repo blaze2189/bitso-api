@@ -27,6 +27,6 @@ public class WebSocketPayloadModel extends TableCell<WebSocketPayload,Object> {
 		setStyle(style);
 		setText(cellValue);
 	}
-	
+
 }
 
