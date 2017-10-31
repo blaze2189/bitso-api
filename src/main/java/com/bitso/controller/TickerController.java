@@ -71,20 +71,6 @@ public class TickerController implements Initializable {
 	@FXML
 	private TableColumn<TradePayload, Object> createdAt;
 
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestAsksId;
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestAsksMakerSide;
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestAsksAmount;
-
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestBidsIdentifier;
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestBidsMakerSide;
-	@FXML
-	private TableColumn<WebSocketPayload, Object> bestBidsAmount;
-
 	@Autowired
 	private BitsoTicker bitsoTicker;
 
